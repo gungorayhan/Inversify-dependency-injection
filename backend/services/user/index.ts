@@ -2,6 +2,8 @@ import { inject, injectable } from "inversify";
 import { UserEntity } from "../../entities";
 import { IUserService, IUserRepository, IPasswordService, ITokenService } from "../../interfaces";
 import { INTERFACE_TYPE } from "../../utils";
+import { AppError } from "../../utils/Error";
+import { ErrorMessages } from "../../utils/Enum/httpCodes";
 
 @injectable()
 export class UserService implements IUserService {
@@ -22,24 +24,48 @@ export class UserService implements IUserService {
    
 
     async createUser(user: UserEntity): Promise<UserEntity> {
-        return this.userRepository.createUser(user);
+        try {
+            return await this.userRepository.createUser(user);
+        } catch (error) {
+            // Hata mesajını değiştirerek fırlatabilirsiniz
+            throw new AppError(400, 'User creation failed');
+        }
     }
-    async getUserById(id: string): Promise<UserEntity | null> {
-            return this.userRepository.findById(id);
+    async getUserById(id: string): Promise<UserEntity> {
+        try {
+            const user = await this.userRepository.findById(id);
+            if (!user) {
+                throw new AppError(404, 'User not found'); // İş mantığı hatası
+            }
+            return user;
+        } catch (error) {
+            // Repository hata mesajlarını değiştirmeyin
+            throw new AppError(500, 'Error retrieving user by ID');
+        }
     }
 
-    async getAllUsers():Promise<UserEntity[] | null>{
+    async getAllUsers():Promise<UserEntity[]>{
         try {
             const users = await this.userRepository.getAllUser();
+            if (users.length === 0) {
+                throw new AppError(404, 'No users found'); // İş mantığı hatası
+            }
             return users;
         } catch (error) {
-            console.log("getAllUsers")
-            return null
+            throw new AppError(500, 'Error retrieving users');
         }
     }
 
     async getUserByEmail(email: string): Promise<UserEntity | null> {
-        return this.userRepository.findByEmail(email);
+        try {
+            const user = await this.userRepository.findByEmail(email);
+            if (!user) {
+                throw new AppError(404, 'User not found by email'); // İş mantığı hatası
+            }
+            return user;
+        } catch (error) {
+            throw new AppError(500, 'Error retrieving user by email');
+        }
     }
     async updateUser(id: string, user: Partial<UserEntity>): Promise<UserEntity | null> {
         throw new Error("Method not implemented.");

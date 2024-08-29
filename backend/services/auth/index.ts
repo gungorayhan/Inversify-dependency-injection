@@ -2,6 +2,7 @@ import { IAuthService, IPasswordService, ITokenService, IUserRepository } from "
 import { inject, injectable } from "inversify"
 import { INTERFACE_TYPE } from "../../utils";
 import { UserEntity } from "../../entities";
+import { AppError } from "../../utils/Error";
 
 
 @injectable()
@@ -23,19 +24,16 @@ export class AuthService implements IAuthService {
     async login(email: string, password: string): Promise<{ accessToken: string, refreshToken: string }> {
         const user = await this.userRepository.findByEmail(email)
         if (!user) {
-            throw new Error('User not found with this email');
+            throw new AppError(404, 'User not found by email');
         }
 
         const isPasswordValid = await this.passwordService.comparePassword(password, user.password);
         if (!isPasswordValid) {
-            throw new Error('Invalid credentials');
+            throw new AppError(401,'Invalid credentials');
         }
 
         const accessToken = await this.tokenService.generateAccessToken({ userId: user._id })
         const refreshToken = await this.tokenService.generateRefreshToken({ userId: user._id })
-
-        //refresh token in cookie 
-        // await this.userRepository.updateRefreshToken(user._id!, refreshToken);
 
         return { accessToken, refreshToken }
     }
@@ -43,7 +41,7 @@ export class AuthService implements IAuthService {
         const existingUser = await this.userRepository.findByEmail(user.email)
 
         if (existingUser) {
-            throw new Error("User already exists with this email")
+            throw new AppError(404, 'User not found by email');
         }
 
         const hashedPassword = await this.passwordService.hashPassword(user.password);
@@ -56,7 +54,7 @@ export class AuthService implements IAuthService {
         })
 
         if (!createdUser) {
-            throw new Error('Failed to create user');
+            throw new AppError(204,'No Content');
         }
 
         const accessToken = await this.tokenService.generateAccessToken({ userId: createdUser._id })
@@ -73,7 +71,6 @@ export class AuthService implements IAuthService {
             
             const decoded = await this.tokenService.verifyRefreshToken(refreshToken);
 
-           
             if (!decoded || !decoded.userId) {
                 return null; 
             }

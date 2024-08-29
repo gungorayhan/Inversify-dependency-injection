@@ -8,5 +8,6 @@ export const INTERFACE_TYPE={
     AuthRepository:Symbol.for("AuthRepository"),
     AuthService:Symbol.for("AuthService"),
     AuthController:Symbol.for("AuthController"),
-    AuthMiddleware:Symbol.for("AuthMiddleware")
+    AuthMiddleware:Symbol.for("AuthMiddleware"),
+    ErrorMiddleware:Symbol.for("ErrorMiddleware")
 }

@@ -1,42 +1,46 @@
-import { inject, injectable } from "inversify";
+import {  injectable } from "inversify";
 import { IUserRepository } from "../../interfaces";
 import { UserEntity } from "../../entities";
-import { INTERFACE_TYPE } from "../../utils";
 import { UserModel } from "../../models";
+import { ErrorMessages } from "../../utils/Enum/httpCodes";
+import { AppError } from "../../utils/Error";
 
 @injectable()
 export class UserRepository implements IUserRepository{
 
     async findById(id: string): Promise<UserEntity | null> {
-      try {
-        const user= await UserModel.findById(id)
-        return user
-      } catch (error) {
-        console.log("Error users:" , error)
-        return null
-      }
+     try {
+        return await UserModel.findById(id).exec()
+     } catch (error) {
+        console.error("Database error finding user by ID:", error);
+        throw new AppError(500, 'Database error');
+     }
     }
-    async getAllUser():Promise<UserEntity[] | null>{
+    async getAllUser(): Promise<UserEntity[]> {
         try {
-            const users = await UserModel.find()
-            return users
+            return await UserModel.find().exec();
         } catch (error) {
-            return null;
+            console.error("UserRepository Error:", error);
+            throw new AppError(500, 'Database error');
         }
     }
     async findByEmail(email: string): Promise<UserEntity | null> {
         try {
-            const user = await UserModel.findOne({ email });
-            return user;
+            return await UserModel.findOne({ email }).exec(); // Veritabanı sorgusu
         } catch (error) {
-            console.error('Error finding user by email:', error);
-            return null; // or throw error based on your error-handling strategy
+            console.error("Database error finding user by email:", error);
+            throw new AppError(500, 'Database error');
         }
     }
     async createUser(user: UserEntity): Promise<UserEntity> {
-        return UserModel.create(user);
+        try {
+            return await UserModel.create(user); // Veritabanına ekleme
+        } catch (error) {
+            console.error("Database error creating user:", error);
+            throw new AppError(500, 'Database error');
+        }
     }
-    async updateUser(id: string, user: Partial<UserEntity>): Promise<UserEntity | null> {
+    async updateUser(id: string, user: Partial<UserEntity>): Promise<UserEntity> {
         throw new Error("Method not implemented.");
     }
     async removeUser(id: string): Promise<void> {

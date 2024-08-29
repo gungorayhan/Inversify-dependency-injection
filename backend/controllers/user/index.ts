@@ -13,29 +13,38 @@ export class UserController {
 
     async getUserById(req: Request, res: Response, next: NextFunction) {
         try {
-            const result = await this.userService.getUserById(req.params.id)
-            res.status(200).json(result);
+            const user = await this.userService.getUserById(req.params.id);
+            res.json(user);
         } catch (error) {
-            console.log(error);
+            next(error); // Hata middleware'ini çağır
         }
     }
 
     async createUser(req: Request, res: Response, next: NextFunction) {
         try {
-            const result = await this.userService.createUser(req.body)
-            res.status(201).json(result);
+            const user = await this.userService.createUser(req.body);
+            res.status(201).json(user);
         } catch (error) {
-            console.log(error)
+            next(error); // Hata middleware'ini çağır
         }
     }
 
     async getUserAll(req: Request, res: Response, next: NextFunction) {
         try {
-            const result = await this.userService.getAllUsers();
-            res.json(result);
+            const users = await this.userService.getAllUsers();
+            res.json(users);
         } catch (error) {
-            console.log("users not read")
-            console.log(error)
+            next(error); // Hata middleware'ini çağır
         }
     }
+
+    async getUserByEmail(req: Request, res: Response, next: NextFunction) {
+        try {
+            const user = await this.userService.getUserByEmail(req.query.email as string);
+            res.json(user);
+        } catch (error) {
+            next(error); // Hata middleware'ini çağır
+        }
+    }
+
 }
