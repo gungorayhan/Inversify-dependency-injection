@@ -48,103 +48,105 @@ var __generator = (this && this.__generator) || function (thisArg, body) {
     }
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.UserController = void 0;
+exports.AuthController = void 0;
 var inversify_1 = require("inversify");
 var utils_1 = require("../../utils");
-var UserController = /** @class */ (function () {
-    function UserController(userService) {
-        this.userService = userService;
+var AuthController = /** @class */ (function () {
+    function AuthController(authService) {
+        this.authService = authService;
     }
-    UserController.prototype.getUserById = function (req, res, next) {
+    AuthController.prototype.login = function (req, res, next) {
         return __awaiter(this, void 0, void 0, function () {
-            var user, error_1;
-            return __generator(this, function (_a) {
-                switch (_a.label) {
+            var _a, email, password, tokens, error_1;
+            return __generator(this, function (_b) {
+                switch (_b.label) {
                     case 0:
-                        _a.trys.push([0, 2, , 3]);
-                        return [4 /*yield*/, this.userService.getUserById(req.params.id)];
+                        _b.trys.push([0, 2, , 3]);
+                        _a = req.body // dto will write
+                        , email = _a.email, password = _a.password;
+                        return [4 /*yield*/, this.authService.login(email, password)];
                     case 1:
-                        user = _a.sent();
-                        res.json(user);
+                        tokens = _b.sent();
+                        if (tokens) {
+                            //refresh token hide in cookie
+                            res.cookie('refreshToken', tokens.refreshToken, {
+                                httpOnly: true,
+                                // secure:true, //only https 
+                                sameSite: 'strict',
+                                maxAge: 7 * 24 * 60 * 60 * 1000 // 7 day
+                            });
+                            //return access token
+                            res.json({ accessToken: tokens.accessToken });
+                        }
                         return [3 /*break*/, 3];
                     case 2:
-                        error_1 = _a.sent();
-                        next(error_1); // Hata middleware'ini çağır
+                        error_1 = _b.sent();
+                        console.log("Login Error: ", error_1);
+                        next(error_1);
                         return [3 /*break*/, 3];
                     case 3: return [2 /*return*/];
                 }
             });
         });
     };
-    UserController.prototype.createUser = function (req, res, next) {
+    AuthController.prototype.register = function (req, res, next) {
         return __awaiter(this, void 0, void 0, function () {
-            var user, error_2;
-            return __generator(this, function (_a) {
-                switch (_a.label) {
+            var _a, username, email, password, first_name, last_name, tokens, error_2;
+            return __generator(this, function (_b) {
+                switch (_b.label) {
                     case 0:
-                        _a.trys.push([0, 2, , 3]);
-                        return [4 /*yield*/, this.userService.createUser(req.body)];
+                        _b.trys.push([0, 2, , 3]);
+                        _a = req.body // dto will write
+                        , username = _a.username, email = _a.email, password = _a.password, first_name = _a.first_name, last_name = _a.last_name;
+                        return [4 /*yield*/, this.authService.register({
+                                username: username,
+                                email: email,
+                                password: password,
+                                first_name: first_name,
+                                last_name: last_name
+                            })];
                     case 1:
-                        user = _a.sent();
-                        res.status(201).json(user);
+                        tokens = _b.sent();
+                        if (tokens) {
+                            //refresh token hide in cookie
+                            res.cookie('refreshToken', tokens.refreshToken, {
+                                httpOnly: true,
+                                // secure:true, //only https 
+                                sameSite: 'strict',
+                                maxAge: 7 * 24 * 60 * 60 * 1000 // 7 day
+                            });
+                            //return access token
+                            res.json({ accessToken: tokens.accessToken });
+                        }
                         return [3 /*break*/, 3];
                     case 2:
-                        error_2 = _a.sent();
-                        next(error_2); // Hata middleware'ini çağır
+                        error_2 = _b.sent();
+                        console.log("Register Error: ", error_2);
+                        next(error_2); // Hata middleware'ine iletmek için
                         return [3 /*break*/, 3];
                     case 3: return [2 /*return*/];
                 }
             });
         });
     };
-    UserController.prototype.getUserAll = function (req, res, next) {
+    AuthController.prototype.logout = function (req, res, next) {
         return __awaiter(this, void 0, void 0, function () {
-            var users, error_3;
             return __generator(this, function (_a) {
-                switch (_a.label) {
-                    case 0:
-                        _a.trys.push([0, 2, , 3]);
-                        return [4 /*yield*/, this.userService.getAllUsers()];
-                    case 1:
-                        users = _a.sent();
-                        res.json(users);
-                        return [3 /*break*/, 3];
-                    case 2:
-                        error_3 = _a.sent();
-                        next(error_3); // Hata middleware'ini çağır
-                        return [3 /*break*/, 3];
-                    case 3: return [2 /*return*/];
+                try {
                 }
+                catch (error) {
+                    console.log(error);
+                }
+                return [2 /*return*/];
             });
         });
     };
-    UserController.prototype.getUserByEmail = function (req, res, next) {
-        return __awaiter(this, void 0, void 0, function () {
-            var user, error_4;
-            return __generator(this, function (_a) {
-                switch (_a.label) {
-                    case 0:
-                        _a.trys.push([0, 2, , 3]);
-                        return [4 /*yield*/, this.userService.getUserByEmail(req.query.email)];
-                    case 1:
-                        user = _a.sent();
-                        res.json(user);
-                        return [3 /*break*/, 3];
-                    case 2:
-                        error_4 = _a.sent();
-                        next(error_4); // Hata middleware'ini çağır
-                        return [3 /*break*/, 3];
-                    case 3: return [2 /*return*/];
-                }
-            });
-        });
-    };
-    UserController = __decorate([
+    AuthController = __decorate([
         (0, inversify_1.injectable)(),
-        __param(0, (0, inversify_1.inject)(utils_1.INTERFACE_TYPE.UserService)),
+        __param(0, (0, inversify_1.inject)(utils_1.INTERFACE_TYPE.AuthService)),
         __metadata("design:paramtypes", [Object])
-    ], UserController);
-    return UserController;
+    ], AuthController);
+    return AuthController;
 }());
-exports.UserController = UserController;
+exports.AuthController = AuthController;
 //# sourceMappingURL=index.js.map

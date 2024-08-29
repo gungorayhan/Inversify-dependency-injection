@@ -1,4 +1,5 @@
 
+
 export const INTERFACE_TYPE={
     PasswordService:Symbol.for("PasswordService"),
     TokenService:Symbol.for("TokenService"),
@@ -9,5 +10,6 @@ export const INTERFACE_TYPE={
     AuthService:Symbol.for("AuthService"),
     AuthController:Symbol.for("AuthController"),
     AuthMiddleware:Symbol.for("AuthMiddleware"),
-    ErrorMiddleware:Symbol.for("ErrorMiddleware")
+    ErrorMiddleware:Symbol.for("ErrorMiddleware"),
+    DtoMiddleware:Symbol.for("DtoMiddleware")
 }

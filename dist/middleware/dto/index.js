@@ -1,4 +1,10 @@
 "use strict";
+var __decorate = (this && this.__decorate) || function (decorators, target, key, desc) {
+    var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
+    if (typeof Reflect === "object" && typeof Reflect.decorate === "function") r = Reflect.decorate(decorators, target, key, desc);
+    else for (var i = decorators.length - 1; i >= 0; i--) if (d = decorators[i]) r = (c < 3 ? d(r) : c > 3 ? d(target, key, r) : d(target, key)) || r;
+    return c > 3 && r && Object.defineProperty(target, key, r), r;
+};
 var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, generator) {
     function adopt(value) { return value instanceof P ? value : new P(function (resolve) { resolve(value); }); }
     return new (P || (P = Promise))(function (resolve, reject) {
@@ -35,34 +41,42 @@ var __generator = (this && this.__generator) || function (thisArg, body) {
         if (op[0] & 5) throw op[1]; return { value: op[0] ? op[1] : void 0, done: true };
     }
 };
-var __importDefault = (this && this.__importDefault) || function (mod) {
-    return (mod && mod.__esModule) ? mod : { "default": mod };
-};
 Object.defineProperty(exports, "__esModule", { value: true });
-var express_1 = __importDefault(require("express"));
-var routes_1 = require("../routes");
-var cookie_parser_1 = __importDefault(require("cookie-parser"));
-var db_1 = require("../db");
-var cors_1 = __importDefault(require("cors"));
-var errorMiddleware_1 = require("../container/errorMiddleware");
-var utils_1 = require("../utils");
-exports.default = (function (app) { return __awaiter(void 0, void 0, void 0, function () {
-    var ErrorMiddleware;
-    return __generator(this, function (_a) {
-        switch (_a.label) {
-            case 0:
-                app.use((0, cors_1.default)());
-                app.use(express_1.default.json());
-                app.use(express_1.default.urlencoded({ extended: true }));
-                app.use((0, cookie_parser_1.default)());
-                ErrorMiddleware = errorMiddleware_1.errorContainer.get(utils_1.INTERFACE_TYPE.ErrorMiddleware);
-                return [4 /*yield*/, (0, db_1.connectToUserDatabase)()];
-            case 1:
-                _a.sent();
-                app.use("/api", routes_1.Router);
-                app.use(ErrorMiddleware.handle.bind(ErrorMiddleware));
-                return [2 /*return*/, app];
-        }
-    });
-}); });
+exports.DtoMiddleware = void 0;
+var inversify_1 = require("inversify");
+var class_transformer_1 = require("class-transformer");
+var class_validator_1 = require("class-validator");
+var Error_1 = require("../../utils/Error");
+var DtoMiddleware = /** @class */ (function () {
+    function DtoMiddleware() {
+    }
+    DtoMiddleware.prototype.validate = function (dtoClass) {
+        var _this = this;
+        return function (req, res, next) { return __awaiter(_this, void 0, void 0, function () {
+            var dtoObject, errors, messages;
+            return __generator(this, function (_a) {
+                switch (_a.label) {
+                    case 0:
+                        dtoObject = (0, class_transformer_1.plainToInstance)(dtoClass, req.body);
+                        return [4 /*yield*/, (0, class_validator_1.validate)(dtoObject)];
+                    case 1:
+                        errors = _a.sent();
+                        if (errors.length > 0) {
+                            messages = errors.map(function (err) { return Object.values(err.constraints || {}).join(', '); }).join('; ');
+                            next(new Error_1.AppError(400, messages)); // Hatalı veriyi middleware'e ilet
+                        }
+                        else {
+                            next();
+                        }
+                        return [2 /*return*/];
+                }
+            });
+        }); };
+    };
+    DtoMiddleware = __decorate([
+        (0, inversify_1.injectable)()
+    ], DtoMiddleware);
+    return DtoMiddleware;
+}());
+exports.DtoMiddleware = DtoMiddleware;
 //# sourceMappingURL=index.js.map

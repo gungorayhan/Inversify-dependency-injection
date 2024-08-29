@@ -45,24 +45,23 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.UserRepository = void 0;
 var inversify_1 = require("inversify");
 var models_1 = require("../../models");
+var Error_1 = require("../../utils/Error");
 var UserRepository = /** @class */ (function () {
     function UserRepository() {
     }
     UserRepository.prototype.findById = function (id) {
         return __awaiter(this, void 0, void 0, function () {
-            var user, error_1;
+            var error_1;
             return __generator(this, function (_a) {
                 switch (_a.label) {
                     case 0:
                         _a.trys.push([0, 2, , 3]);
-                        return [4 /*yield*/, models_1.UserModel.findById(id)];
-                    case 1:
-                        user = _a.sent();
-                        return [2 /*return*/, user];
+                        return [4 /*yield*/, models_1.UserModel.findById(id).exec()];
+                    case 1: return [2 /*return*/, _a.sent()];
                     case 2:
                         error_1 = _a.sent();
-                        console.log("Error users:", error_1);
-                        return [2 /*return*/, null];
+                        console.error("Database error finding user by ID:", error_1);
+                        throw new Error_1.AppError(500, 'Database error');
                     case 3: return [2 /*return*/];
                 }
             });
@@ -70,18 +69,17 @@ var UserRepository = /** @class */ (function () {
     };
     UserRepository.prototype.getAllUser = function () {
         return __awaiter(this, void 0, void 0, function () {
-            var users, error_2;
+            var error_2;
             return __generator(this, function (_a) {
                 switch (_a.label) {
                     case 0:
                         _a.trys.push([0, 2, , 3]);
-                        return [4 /*yield*/, models_1.UserModel.find()];
-                    case 1:
-                        users = _a.sent();
-                        return [2 /*return*/, users];
+                        return [4 /*yield*/, models_1.UserModel.find().exec()];
+                    case 1: return [2 /*return*/, _a.sent()];
                     case 2:
                         error_2 = _a.sent();
-                        return [2 /*return*/, null];
+                        console.error("UserRepository Error:", error_2);
+                        throw new Error_1.AppError(500, 'Database error');
                     case 3: return [2 /*return*/];
                 }
             });
@@ -89,19 +87,17 @@ var UserRepository = /** @class */ (function () {
     };
     UserRepository.prototype.findByEmail = function (email) {
         return __awaiter(this, void 0, void 0, function () {
-            var user, error_3;
+            var error_3;
             return __generator(this, function (_a) {
                 switch (_a.label) {
                     case 0:
                         _a.trys.push([0, 2, , 3]);
-                        return [4 /*yield*/, models_1.UserModel.findOne({ email: email })];
-                    case 1:
-                        user = _a.sent();
-                        return [2 /*return*/, user];
+                        return [4 /*yield*/, models_1.UserModel.findOne({ email: email }).exec()];
+                    case 1: return [2 /*return*/, _a.sent()]; // Veritabanı sorgusu
                     case 2:
                         error_3 = _a.sent();
-                        console.error('Error finding user by email:', error_3);
-                        return [2 /*return*/, null]; // or throw error based on your error-handling strategy
+                        console.error("Database error finding user by email:", error_3);
+                        throw new Error_1.AppError(500, 'Database error');
                     case 3: return [2 /*return*/];
                 }
             });
@@ -109,8 +105,19 @@ var UserRepository = /** @class */ (function () {
     };
     UserRepository.prototype.createUser = function (user) {
         return __awaiter(this, void 0, void 0, function () {
+            var error_4;
             return __generator(this, function (_a) {
-                return [2 /*return*/, models_1.UserModel.create(user)];
+                switch (_a.label) {
+                    case 0:
+                        _a.trys.push([0, 2, , 3]);
+                        return [4 /*yield*/, models_1.UserModel.create(user)];
+                    case 1: return [2 /*return*/, _a.sent()]; // Veritabanına ekleme
+                    case 2:
+                        error_4 = _a.sent();
+                        console.error("Database error creating user:", error_4);
+                        throw new Error_1.AppError(500, 'Database error');
+                    case 3: return [2 /*return*/];
+                }
             });
         });
     };

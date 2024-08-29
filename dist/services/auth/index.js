@@ -51,6 +51,7 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.AuthService = void 0;
 var inversify_1 = require("inversify");
 var utils_1 = require("../../utils");
+var Error_1 = require("../../utils/Error");
 var AuthService = /** @class */ (function () {
     function AuthService(userRepository, tokenService, passwordService) {
         this.userRepository = userRepository;
@@ -66,25 +67,20 @@ var AuthService = /** @class */ (function () {
                     case 1:
                         user = _a.sent();
                         if (!user) {
-                            throw new Error('User not found with this email');
+                            throw new Error_1.AppError(404, 'User not found by email');
                         }
                         return [4 /*yield*/, this.passwordService.comparePassword(password, user.password)];
                     case 2:
                         isPasswordValid = _a.sent();
                         if (!isPasswordValid) {
-                            throw new Error('Invalid credentials');
+                            throw new Error_1.AppError(401, 'Invalid credentials');
                         }
                         return [4 /*yield*/, this.tokenService.generateAccessToken({ userId: user._id })];
                     case 3:
                         accessToken = _a.sent();
-                        return [4 /*yield*/, this.tokenService.generateRefreshToken({ userId: user._id })
-                            //refresh token in cookie 
-                            // await this.userRepository.updateRefreshToken(user._id!, refreshToken);
-                        ];
+                        return [4 /*yield*/, this.tokenService.generateRefreshToken({ userId: user._id })];
                     case 4:
                         refreshToken = _a.sent();
-                        //refresh token in cookie 
-                        // await this.userRepository.updateRefreshToken(user._id!, refreshToken);
                         return [2 /*return*/, { accessToken: accessToken, refreshToken: refreshToken }];
                 }
             });
@@ -99,7 +95,7 @@ var AuthService = /** @class */ (function () {
                     case 1:
                         existingUser = _a.sent();
                         if (existingUser) {
-                            throw new Error("User already exists with this email");
+                            throw new Error_1.AppError(404, 'User not found by email');
                         }
                         return [4 /*yield*/, this.passwordService.hashPassword(user.password)];
                     case 2:
@@ -114,7 +110,7 @@ var AuthService = /** @class */ (function () {
                     case 3:
                         createdUser = _a.sent();
                         if (!createdUser) {
-                            throw new Error('Failed to create user');
+                            throw new Error_1.AppError(204, 'No Content');
                         }
                         return [4 /*yield*/, this.tokenService.generateAccessToken({ userId: createdUser._id })];
                     case 4:

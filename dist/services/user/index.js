@@ -51,6 +51,7 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.UserService = void 0;
 var inversify_1 = require("inversify");
 var utils_1 = require("../../utils");
+var Error_1 = require("../../utils/Error");
 var UserService = /** @class */ (function () {
     function UserService(userRepository, tokenService, passwordService) {
         this.userRepository = userRepository;
@@ -59,21 +60,48 @@ var UserService = /** @class */ (function () {
     }
     UserService.prototype.createUser = function (user) {
         return __awaiter(this, void 0, void 0, function () {
+            var error_1;
             return __generator(this, function (_a) {
-                return [2 /*return*/, this.userRepository.createUser(user)];
+                switch (_a.label) {
+                    case 0:
+                        _a.trys.push([0, 2, , 3]);
+                        return [4 /*yield*/, this.userRepository.createUser(user)];
+                    case 1: return [2 /*return*/, _a.sent()];
+                    case 2:
+                        error_1 = _a.sent();
+                        // Hata mesajını değiştirerek fırlatabilirsiniz
+                        throw new Error_1.AppError(400, 'User creation failed');
+                    case 3: return [2 /*return*/];
+                }
             });
         });
     };
     UserService.prototype.getUserById = function (id) {
         return __awaiter(this, void 0, void 0, function () {
+            var user, error_2;
             return __generator(this, function (_a) {
-                return [2 /*return*/, this.userRepository.findById(id)];
+                switch (_a.label) {
+                    case 0:
+                        _a.trys.push([0, 2, , 3]);
+                        return [4 /*yield*/, this.userRepository.findById(id)];
+                    case 1:
+                        user = _a.sent();
+                        if (!user) {
+                            throw new Error_1.AppError(404, 'User not found'); // İş mantığı hatası
+                        }
+                        return [2 /*return*/, user];
+                    case 2:
+                        error_2 = _a.sent();
+                        // Repository hata mesajlarını değiştirmeyin
+                        throw new Error_1.AppError(500, 'Error retrieving user by ID');
+                    case 3: return [2 /*return*/];
+                }
             });
         });
     };
     UserService.prototype.getAllUsers = function () {
         return __awaiter(this, void 0, void 0, function () {
-            var users, error_1;
+            var users, error_3;
             return __generator(this, function (_a) {
                 switch (_a.label) {
                     case 0:
@@ -81,11 +109,13 @@ var UserService = /** @class */ (function () {
                         return [4 /*yield*/, this.userRepository.getAllUser()];
                     case 1:
                         users = _a.sent();
+                        if (users.length === 0) {
+                            throw new Error_1.AppError(404, 'No users found'); // İş mantığı hatası
+                        }
                         return [2 /*return*/, users];
                     case 2:
-                        error_1 = _a.sent();
-                        console.log("getAllUsers");
-                        return [2 /*return*/, null];
+                        error_3 = _a.sent();
+                        throw new Error_1.AppError(500, 'Error retrieving users');
                     case 3: return [2 /*return*/];
                 }
             });
@@ -93,8 +123,23 @@ var UserService = /** @class */ (function () {
     };
     UserService.prototype.getUserByEmail = function (email) {
         return __awaiter(this, void 0, void 0, function () {
+            var user, error_4;
             return __generator(this, function (_a) {
-                return [2 /*return*/, this.userRepository.findByEmail(email)];
+                switch (_a.label) {
+                    case 0:
+                        _a.trys.push([0, 2, , 3]);
+                        return [4 /*yield*/, this.userRepository.findByEmail(email)];
+                    case 1:
+                        user = _a.sent();
+                        if (!user) {
+                            throw new Error_1.AppError(404, 'User not found by email'); // İş mantığı hatası
+                        }
+                        return [2 /*return*/, user];
+                    case 2:
+                        error_4 = _a.sent();
+                        throw new Error_1.AppError(500, 'Error retrieving user by email');
+                    case 3: return [2 /*return*/];
+                }
             });
         });
     };
