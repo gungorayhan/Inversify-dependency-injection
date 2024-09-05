@@ -7,4 +7,5 @@ export interface IUserService{
     updateUser(id:string, user:Partial<UserEntity>):Promise<UserEntity | null>
     deleteUser(id:string):Promise<void>
     getAllUsers():Promise<UserEntity[]>
+    subscribeToUserCreated(callback: (data: any) => void):void
 }

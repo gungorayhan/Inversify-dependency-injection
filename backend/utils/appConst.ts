@@ -11,5 +11,7 @@ export const INTERFACE_TYPE={
     AuthController:Symbol.for("AuthController"),
     AuthMiddleware:Symbol.for("AuthMiddleware"),
     ErrorMiddleware:Symbol.for("ErrorMiddleware"),
-    DtoMiddleware:Symbol.for("DtoMiddleware")
+    DtoMiddleware:Symbol.for("DtoMiddleware"),
+    EventEmitter:Symbol.for("EventEmitter"),
+    Notification:Symbol.for("Notification")
 }

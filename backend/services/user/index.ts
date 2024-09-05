@@ -1,36 +1,46 @@
 import { inject, injectable } from "inversify";
 import { UserEntity } from "../../entities";
-import { IUserService, IUserRepository, IPasswordService, ITokenService } from "../../interfaces";
+import { IUserService, IUserRepository, IPasswordService, ITokenService, IEventEmitter } from "../../interfaces";
 import { INTERFACE_TYPE } from "../../utils";
 import { AppError } from "../../utils/Error";
 import { ErrorMessages } from "../../utils/Enum/httpCodes";
+import { Emitter } from "../../libs/events";
 
 @injectable()
 export class UserService implements IUserService {
     private userRepository: IUserRepository;
     private tokenService: ITokenService;
     private passwordService: IPasswordService;
+    private emitter : IEventEmitter
     
     constructor(
         @inject(INTERFACE_TYPE.UserRepository) userRepository: IUserRepository,
         @inject(INTERFACE_TYPE.TokenService) tokenService: ITokenService,
         @inject(INTERFACE_TYPE.PasswordService) passwordService: IPasswordService,
+        @inject(INTERFACE_TYPE.EventEmitter) emitter : IEventEmitter
     ) {
         this.userRepository = userRepository;
         this.tokenService = tokenService;
         this.passwordService = passwordService;
+        this.emitter=emitter
         
     }
    
 
     async createUser(user: UserEntity): Promise<UserEntity> {
         try {
-            return await this.userRepository.createUser(user);
+            const result = await this.userRepository.createUser(user);
+
+            this.emitter.publish('userCreated',result)
+            
+            return result
         } catch (error) {
             // Hata mesajını değiştirerek fırlatabilirsiniz
             throw new AppError(400, 'User creation failed');
         }
     }
+
+
     async getUserById(id: string): Promise<UserEntity> {
         try {
             const user = await this.userRepository.findById(id);
@@ -56,6 +66,8 @@ export class UserService implements IUserService {
         }
     }
 
+
+
     async getUserByEmail(email: string): Promise<UserEntity | null> {
         try {
             const user = await this.userRepository.findByEmail(email);
@@ -73,6 +85,9 @@ export class UserService implements IUserService {
     deleteUser(id: string): Promise<void> {
         throw new Error("Method not implemented.");
     }
-   
 
+    subscribeToUserCreated(callback: (data: any) => void):void {
+        this.emitter.subscribe('userCreated', callback);
+    }
+   
 }

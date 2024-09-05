@@ -5,3 +5,5 @@ export {IUserRepository} from "./user/IUserRepository"
 export {IUserService} from "./user/IUserService"
 
 export {IAuthService} from "./auth-service"
+
+export {IEventEmitter} from "./emitter"
