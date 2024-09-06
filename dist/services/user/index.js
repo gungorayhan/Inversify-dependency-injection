@@ -53,20 +53,24 @@ var inversify_1 = require("inversify");
 var utils_1 = require("../../utils");
 var Error_1 = require("../../utils/Error");
 var UserService = /** @class */ (function () {
-    function UserService(userRepository, tokenService, passwordService) {
+    function UserService(userRepository, tokenService, passwordService, emitter) {
         this.userRepository = userRepository;
         this.tokenService = tokenService;
         this.passwordService = passwordService;
+        this.emitter = emitter;
     }
     UserService.prototype.createUser = function (user) {
         return __awaiter(this, void 0, void 0, function () {
-            var error_1;
+            var result, error_1;
             return __generator(this, function (_a) {
                 switch (_a.label) {
                     case 0:
                         _a.trys.push([0, 2, , 3]);
                         return [4 /*yield*/, this.userRepository.createUser(user)];
-                    case 1: return [2 /*return*/, _a.sent()];
+                    case 1:
+                        result = _a.sent();
+                        this.emitter.publish('userCreated', result);
+                        return [2 /*return*/, result];
                     case 2:
                         error_1 = _a.sent();
                         // Hata mesajını değiştirerek fırlatabilirsiniz
@@ -153,12 +157,16 @@ var UserService = /** @class */ (function () {
     UserService.prototype.deleteUser = function (id) {
         throw new Error("Method not implemented.");
     };
+    UserService.prototype.subscribeToUserCreated = function (callback) {
+        this.emitter.subscribe('userCreated', callback);
+    };
     UserService = __decorate([
         (0, inversify_1.injectable)(),
         __param(0, (0, inversify_1.inject)(utils_1.INTERFACE_TYPE.UserRepository)),
         __param(1, (0, inversify_1.inject)(utils_1.INTERFACE_TYPE.TokenService)),
         __param(2, (0, inversify_1.inject)(utils_1.INTERFACE_TYPE.PasswordService)),
-        __metadata("design:paramtypes", [Object, Object, Object])
+        __param(3, (0, inversify_1.inject)(utils_1.INTERFACE_TYPE.EventEmitter)),
+        __metadata("design:paramtypes", [Object, Object, Object, Object])
     ], UserService);
     return UserService;
 }());

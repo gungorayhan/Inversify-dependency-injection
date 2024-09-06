@@ -1,4 +1,10 @@
 "use strict";
+var __decorate = (this && this.__decorate) || function (decorators, target, key, desc) {
+    var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
+    if (typeof Reflect === "object" && typeof Reflect.decorate === "function") r = Reflect.decorate(decorators, target, key, desc);
+    else for (var i = decorators.length - 1; i >= 0; i--) if (d = decorators[i]) r = (c < 3 ? d(r) : c > 3 ? d(target, key, r) : d(target, key)) || r;
+    return c > 3 && r && Object.defineProperty(target, key, r), r;
+};
 var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, generator) {
     function adopt(value) { return value instanceof P ? value : new P(function (resolve) { resolve(value); }); }
     return new (P || (P = Promise))(function (resolve, reject) {
@@ -39,38 +45,36 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-var express_1 = __importDefault(require("express"));
-require("reflect-metadata");
-var api_1 = __importDefault(require("./api"));
-var config_1 = __importDefault(require("./config"));
-var db_1 = require("./db");
-function ServerStart() {
-    return __awaiter(this, void 0, void 0, function () {
-        var app, error_1;
-        return __generator(this, function (_a) {
-            switch (_a.label) {
-                case 0:
-                    _a.trys.push([0, 2, , 4]);
-                    app = (0, express_1.default)();
-                    return [4 /*yield*/, (0, api_1.default)(app)];
-                case 1:
-                    _a.sent();
-                    app.listen(config_1.default.PORT, function () {
-                        console.log("Server is running on port ".concat(config_1.default.PORT));
-                    });
-                    return [3 /*break*/, 4];
-                case 2:
-                    error_1 = _a.sent();
-                    console.error('Error initializing application:', error_1);
-                    return [4 /*yield*/, (0, db_1.closeConnections)()];
-                case 3:
-                    _a.sent();
-                    process.exit(1);
-                    return [3 /*break*/, 4];
-                case 4: return [2 /*return*/];
-            }
+exports.PasswordService = void 0;
+var inversify_1 = require("inversify");
+var bcrypt_1 = __importDefault(require("bcrypt"));
+var PasswordService = /** @class */ (function () {
+    function PasswordService() {
+        this.saltRounds = 10;
+    }
+    // constructor(saltRounds?: number) {
+    //     if (saltRounds) {
+    //         this.saltRounds = saltRounds;
+    //       }
+    // } dependency injection sırasında bozulmeye neden olduğundan dolayı yorum satırı yapıldı
+    PasswordService.prototype.hashPassword = function (password) {
+        return __awaiter(this, void 0, void 0, function () {
+            return __generator(this, function (_a) {
+                return [2 /*return*/, bcrypt_1.default.hash(password, this.saltRounds)];
+            });
         });
-    });
-}
-ServerStart();
-//# sourceMappingURL=server.js.map
+    };
+    PasswordService.prototype.comparePassword = function (password, hash) {
+        return __awaiter(this, void 0, void 0, function () {
+            return __generator(this, function (_a) {
+                return [2 /*return*/, bcrypt_1.default.compare(password, hash)];
+            });
+        });
+    };
+    PasswordService = __decorate([
+        (0, inversify_1.injectable)()
+    ], PasswordService);
+    return PasswordService;
+}());
+exports.PasswordService = PasswordService;
+//# sourceMappingURL=index.js.map

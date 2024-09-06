@@ -2,13 +2,12 @@ import express, { Application } from "express"
 import "reflect-metadata"
 import UserApp from "./api"
 import config from "./config";
-import { initDatabases } from './db';
+import { closeConnections } from "./db";
+
 
 async function ServerStart() {
-
+   try {
     const app: Application = express();
-
-    // const {userDB} = await initDatabases();
 
     await UserApp(app)
 
@@ -16,11 +15,12 @@ async function ServerStart() {
         console.log(`Server is running on port ${config.PORT}`)
     })
 
-    // process.on('SIGINT', async () => {
-    //     console.log('Closing MongoDB connections...');
-    //     await userDB.close();
-    //     process.exit(0);
-    // });
+   } catch (error) {
+     console.error('Error initializing application:', error);
+        await closeConnections();
+        process.exit(1);
+   }
+   
 }
 
 

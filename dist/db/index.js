@@ -39,59 +39,85 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.initDatabases = exports.connectToUserDatabase = void 0;
+exports.connectToUserDatabase = void 0;
+exports.connectToDatabases = connectToDatabases;
+exports.closeConnections = closeConnections;
+exports.getDatabaseConnection = getDatabaseConnection;
 var user_1 = require("./user");
 Object.defineProperty(exports, "connectToUserDatabase", { enumerable: true, get: function () { return user_1.connectToUserDatabase; } });
-var config_1 = __importDefault(require("../config"));
 var mongoose_1 = __importDefault(require("mongoose"));
-var models_1 = require("../models");
-var handleConnectionError = function (dbName) { return function (error) {
-    console.error("MongoDB connection error for ".concat(dbName, ":"), error);
-}; };
-var handleConnectionSuccess = function (dbName) { return function () {
-    console.log("MongoDB connection successful for ".concat(dbName));
-}; };
-var connectToDatabase = function (uri) {
-    return new Promise(function (resolve, reject) {
-        var connection = mongoose_1.default.createConnection(uri, {
-            useNewUrlParser: true,
-            useUnifiedTopology: true,
-            serverSelectionTimeoutMS: 30000, // 30 seconds
-            socketTimeoutMS: 45000, // 45 seconds
-        });
-        connection.once('open', function () {
-            handleConnectionSuccess(uri)();
-            resolve(connection);
-        });
-        connection.on('error', function (error) {
-            handleConnectionError(uri)(error);
-            reject(error);
+var config_1 = __importDefault(require("../config"));
+var connections = {};
+function connectToDatabases() {
+    return __awaiter(this, void 0, void 0, function () {
+        var _loop_1, _i, _a, _b, dbName, uri;
+        return __generator(this, function (_c) {
+            _loop_1 = function (dbName, uri) {
+                if (!connections[dbName]) {
+                    try {
+                        var connection = mongoose_1.default.createConnection(uri, {
+                            useNewUrlParser: true,
+                            useUnifiedTopology: true
+                        });
+                        connection.on('open', function () {
+                            console.log("Connected to ".concat(dbName));
+                        });
+                        connection.on('error', function (error) {
+                            console.error("Failed to connect to ".concat(dbName, ":"), error);
+                        });
+                        connections[dbName] = connection;
+                    }
+                    catch (error) {
+                        console.error("Failed to connect to ".concat(dbName, ":"), error);
+                        throw error;
+                    }
+                }
+            };
+            for (_i = 0, _a = Object.entries(config_1.default.DatabaseURL); _i < _a.length; _i++) {
+                _b = _a[_i], dbName = _b[0], uri = _b[1];
+                _loop_1(dbName, uri);
+            }
+            return [2 /*return*/];
         });
     });
-};
-var initDatabases = function () { return __awaiter(void 0, void 0, void 0, function () {
-    var userDB, error_1;
-    return __generator(this, function (_a) {
-        switch (_a.label) {
-            case 0:
-                _a.trys.push([0, 2, , 3]);
-                return [4 /*yield*/, Promise.all([
-                        connectToDatabase(config_1.default.UserDatabaseURL),
-                        // connectToDatabase('mongodb://localhost/db2'),
-                        // connectToDatabase('mongodb://localhost/db3')
-                    ])];
-            case 1:
-                userDB = (_a.sent())[0];
-                models_1.UserModel.db = userDB;
-                return [2 /*return*/, { userDB: userDB }];
-            case 2:
-                error_1 = _a.sent();
-                console.error('Failed to connect to databases:', error_1);
-                process.exit(1);
-                return [3 /*break*/, 3];
-            case 3: return [2 /*return*/];
-        }
+}
+function closeConnections() {
+    return __awaiter(this, void 0, void 0, function () {
+        var _i, _a, _b, dbName, connection, error_1;
+        return __generator(this, function (_c) {
+            switch (_c.label) {
+                case 0:
+                    _i = 0, _a = Object.entries(connections);
+                    _c.label = 1;
+                case 1:
+                    if (!(_i < _a.length)) return [3 /*break*/, 6];
+                    _b = _a[_i], dbName = _b[0], connection = _b[1];
+                    if (!(connection.readyState === 1)) return [3 /*break*/, 5];
+                    _c.label = 2;
+                case 2:
+                    _c.trys.push([2, 4, , 5]);
+                    return [4 /*yield*/, connection.close()];
+                case 3:
+                    _c.sent();
+                    console.log("Connection to ".concat(dbName, " closed successfully."));
+                    return [3 /*break*/, 5];
+                case 4:
+                    error_1 = _c.sent();
+                    console.error("Failed to close connection to ".concat(dbName, ":"), error_1);
+                    return [3 /*break*/, 5];
+                case 5:
+                    _i++;
+                    return [3 /*break*/, 1];
+                case 6: return [2 /*return*/];
+            }
+        });
     });
-}); };
-exports.initDatabases = initDatabases;
+}
+function getDatabaseConnection(dbName) {
+    var connection = connections[dbName];
+    if (!connection) {
+        throw new Error("No connection found for database: ".concat(dbName));
+    }
+    return connection;
+}
 //# sourceMappingURL=index.js.map

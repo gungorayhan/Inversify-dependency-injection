@@ -1,51 +1,54 @@
 export {connectToUserDatabase} from "./user";
-import config from "../config";
-import mongoose ,{ConnectOptions}from "mongoose"
-import { UserModel } from "../models";
 
+import mongoose, { Connection, ConnectOptions } from 'mongoose';
+import config from '../config';
 
-const handleConnectionError = (dbName: string) => (error: any) => {
-    console.error(`MongoDB connection error for ${dbName}:`, error);
-};
+const connections: { [key: string]: Connection } = {};
 
-const handleConnectionSuccess = (dbName: string) => () => {
-    console.log(`MongoDB connection successful for ${dbName}`);
-};
+export async function connectToDatabases() {
+    for (const [dbName, uri] of Object.entries(config.DatabaseURL)) {
+        if (!connections[dbName]) {
+            try {
+                const connection = mongoose.createConnection(uri, {
+                    useNewUrlParser: true,
+                    useUnifiedTopology: true
+                } as ConnectOptions);
 
-const connectToDatabase = (uri: string) => {
-    return new Promise<mongoose.Connection>((resolve, reject) => {
-        const connection = mongoose.createConnection(uri, {
-            useNewUrlParser: true,
-            useUnifiedTopology: true,
-            serverSelectionTimeoutMS: 30000, // 30 seconds
-            socketTimeoutMS: 45000, // 45 seconds
-         } as ConnectOptions);
+                connection.on('open', () => {
+                    console.log(`Connected to ${dbName}`);
+                });
 
-        connection.once('open', () => {
-            handleConnectionSuccess(uri)();
-            resolve(connection);
-        });
+                connection.on('error', (error) => {
+                    console.error(`Failed to connect to ${dbName}:`, error);
+                });
 
-        connection.on('error', (error) => {
-            handleConnectionError(uri)(error);
-            reject(error);
-        });
-    });
-};
-
-const initDatabases = async () => {
-    try {
-        const [userDB] = await Promise.all([
-            connectToDatabase(config.UserDatabaseURL),
-            // connectToDatabase('mongodb://localhost/db2'),
-            // connectToDatabase('mongodb://localhost/db3')
-        ]);
-        UserModel.db=userDB;
-        return { userDB };
-    } catch (error) {
-        console.error('Failed to connect to databases:', error);
-        process.exit(1);
+                connections[dbName] = connection;
+            } catch (error) {
+                console.error(`Failed to connect to ${dbName}:`, error);
+                throw error;
+            }
+        }
     }
-};
+}
 
-export { initDatabases };
+export async function closeConnections() {
+    for (const [dbName, connection] of Object.entries(connections)) {
+        if (connection.readyState === 1) { // Bağlıysa kapat
+            try {
+                await connection.close();
+                console.log(`Connection to ${dbName} closed successfully.`);
+            } catch (error) {
+                console.error(`Failed to close connection to ${dbName}:`, error);
+            }
+        }
+    }
+}
+
+export function getDatabaseConnection(dbName: string): Connection {
+    const connection = connections[dbName];
+    if (!connection) {
+        throw new Error(`No connection found for database: ${dbName}`);
+    }
+    return connection;
+}
+

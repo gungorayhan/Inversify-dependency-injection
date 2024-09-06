@@ -1,4 +1,4 @@
-import mongoose, { Document, Schema } from "mongoose";
+import mongoose, { Document, Schema,Model, Connection } from "mongoose";
 import { UserEntity } from "../../entities";
 
 
@@ -11,7 +11,7 @@ export interface IUser extends Document {
 
 }
 
-const userSchema = new mongoose.Schema<UserEntity>({
+export const userSchema:Schema = new mongoose.Schema<UserEntity>({
     username: { type: String, required: true,unique:true },
     email: { type: String, required: true, unique:true},
     password: { type: String, required: true },
@@ -21,4 +21,5 @@ const userSchema = new mongoose.Schema<UserEntity>({
     timestamps: true
 })
 
-export const UserModel = mongoose.model<UserEntity>("User", userSchema); 
+
+export const UserModel = mongoose.model<UserEntity>("User", userSchema);

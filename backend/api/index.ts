@@ -10,10 +10,10 @@ import { ErrorMiddleware } from "../middleware/error"
 import { notificationContainer } from "../container/notification"
 import { NotificationServices } from "../libs/notification"
 import { userContainer } from "../container/userController"
-
+import { initializeModels } from "../models"
 
 export default async (app: Application): Promise<Application> => {
-
+    console.log("first")
     app.use(cors());
     app.use(express.json());
     app.use(express.urlencoded({ extended: true }));
@@ -25,8 +25,9 @@ export default async (app: Application): Promise<Application> => {
 
     const ErrorMiddleware = errorContainer.get<ErrorMiddleware>(INTERFACE_TYPE.ErrorMiddleware)
 
-    await connectToUserDatabase();
-
+    // await connectToUserDatabase();
+   await initializeModels()
+    
 
     app.use("/api", Router)
     app.use(ErrorMiddleware.handle.bind(ErrorMiddleware))

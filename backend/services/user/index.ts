@@ -4,7 +4,7 @@ import { IUserService, IUserRepository, IPasswordService, ITokenService, IEventE
 import { INTERFACE_TYPE } from "../../utils";
 import { AppError } from "../../utils/Error";
 import { ErrorMessages } from "../../utils/Enum/httpCodes";
-import { Emitter } from "../../libs/events";
+
 
 @injectable()
 export class UserService implements IUserService {

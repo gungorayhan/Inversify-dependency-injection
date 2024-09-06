@@ -35,42 +35,33 @@ var __generator = (this && this.__generator) || function (thisArg, body) {
         if (op[0] & 5) throw op[1]; return { value: op[0] ? op[1] : void 0, done: true };
     }
 };
-var __importDefault = (this && this.__importDefault) || function (mod) {
-    return (mod && mod.__esModule) ? mod : { "default": mod };
-};
 Object.defineProperty(exports, "__esModule", { value: true });
-var express_1 = __importDefault(require("express"));
-require("reflect-metadata");
-var api_1 = __importDefault(require("./api"));
-var config_1 = __importDefault(require("./config"));
-var db_1 = require("./db");
-function ServerStart() {
+exports.UserModel = void 0;
+exports.createModel = createModel;
+exports.initializeModels = initializeModels;
+var db_1 = require("../db");
+var user_1 = require("./user");
+// let userDB: Connection
+// export async function connectionDBToCreatModel(){
+//     await connectToDatabases()
+//     userDB = getDatabaseConnection('userDB')
+//     UserModel = userDB.model<UserEntity>("User",userSchema)
+// }
+function createModel(dbName, modelName, schema) {
+    var db = (0, db_1.getDatabaseConnection)(dbName);
+    return db.model(modelName, schema);
+}
+function initializeModels() {
     return __awaiter(this, void 0, void 0, function () {
-        var app, error_1;
         return __generator(this, function (_a) {
             switch (_a.label) {
-                case 0:
-                    _a.trys.push([0, 2, , 4]);
-                    app = (0, express_1.default)();
-                    return [4 /*yield*/, (0, api_1.default)(app)];
+                case 0: return [4 /*yield*/, (0, db_1.connectToDatabases)()];
                 case 1:
                     _a.sent();
-                    app.listen(config_1.default.PORT, function () {
-                        console.log("Server is running on port ".concat(config_1.default.PORT));
-                    });
-                    return [3 /*break*/, 4];
-                case 2:
-                    error_1 = _a.sent();
-                    console.error('Error initializing application:', error_1);
-                    return [4 /*yield*/, (0, db_1.closeConnections)()];
-                case 3:
-                    _a.sent();
-                    process.exit(1);
-                    return [3 /*break*/, 4];
-                case 4: return [2 /*return*/];
+                    exports.UserModel = createModel('userDB', "User", user_1.userSchema);
+                    return [2 /*return*/];
             }
         });
     });
 }
-ServerStart();
-//# sourceMappingURL=server.js.map
+//# sourceMappingURL=index.js.map
