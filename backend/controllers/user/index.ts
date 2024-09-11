@@ -2,13 +2,19 @@ import { Request, Response, NextFunction } from "express"
 import { injectable, inject } from "inversify";
 import { INTERFACE_TYPE } from "../../utils";
 import { IUserService } from "../../interfaces";
+import { IRedisService } from "../../interfaces/redis";
 
 
 @injectable()
 export class UserController {
     private userService: IUserService
-    constructor(@inject(INTERFACE_TYPE.UserService) userService: IUserService) {
+    private redis: IRedisService
+    constructor(
+        @inject(INTERFACE_TYPE.UserService) userService: IUserService,
+        @inject(INTERFACE_TYPE.Redis) redis: IRedisService
+    ) {
         this.userService = userService
+        this.redis = redis
     }
 
     async getUserById(req: Request, res: Response, next: NextFunction) {
@@ -32,6 +38,11 @@ export class UserController {
     async getUserAll(req: Request, res: Response, next: NextFunction) {
         try {
             const users = await this.userService.getAllUsers();
+
+            if (users) {
+                this.redis.setIfNotExists(req.originalUrl, users, 3600)
+            }
+
             res.json(users);
         } catch (error) {
             next(error); // Hata middleware'ini çağır

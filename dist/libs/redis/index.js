@@ -8,9 +8,6 @@ var __decorate = (this && this.__decorate) || function (decorators, target, key,
 var __metadata = (this && this.__metadata) || function (k, v) {
     if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
 };
-var __param = (this && this.__param) || function (paramIndex, decorator) {
-    return function (target, key) { decorator(target, key, paramIndex); }
-};
 var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, generator) {
     function adopt(value) { return value instanceof P ? value : new P(function (resolve) { resolve(value); }); }
     return new (P || (P = Promise))(function (resolve, reject) {
@@ -48,108 +45,121 @@ var __generator = (this && this.__generator) || function (thisArg, body) {
     }
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.UserController = void 0;
+exports.RedisService = void 0;
 var inversify_1 = require("inversify");
-var utils_1 = require("../../utils");
-var UserController = /** @class */ (function () {
-    function UserController(userService, redis) {
-        this.userService = userService;
-        this.redis = redis;
+var redis_1 = require("redis");
+var RedisService = /** @class */ (function () {
+    function RedisService() {
+        this.client = (0, redis_1.createClient)();
+        this.client.on('error', function (err) {
+            console.error(err);
+        });
     }
-    UserController.prototype.getUserById = function (req, res, next) {
+    RedisService.prototype.connect = function () {
         return __awaiter(this, void 0, void 0, function () {
-            var user, error_1;
             return __generator(this, function (_a) {
                 switch (_a.label) {
                     case 0:
-                        _a.trys.push([0, 2, , 3]);
-                        return [4 /*yield*/, this.userService.getUserById(req.params.id)];
+                        if (!!this.client.isOpen) return [3 /*break*/, 2];
+                        return [4 /*yield*/, this.client.connect()];
                     case 1:
-                        user = _a.sent();
-                        res.json(user);
-                        return [3 /*break*/, 3];
-                    case 2:
-                        error_1 = _a.sent();
-                        next(error_1); // Hata middleware'ini çağır
-                        return [3 /*break*/, 3];
-                    case 3: return [2 /*return*/];
+                        _a.sent();
+                        _a.label = 2;
+                    case 2: return [2 /*return*/];
                 }
             });
         });
     };
-    UserController.prototype.createUser = function (req, res, next) {
+    RedisService.prototype.set = function (key, value, expiry) {
         return __awaiter(this, void 0, void 0, function () {
-            var user, error_2;
             return __generator(this, function (_a) {
                 switch (_a.label) {
-                    case 0:
-                        _a.trys.push([0, 2, , 3]);
-                        return [4 /*yield*/, this.userService.createUser(req.body)];
+                    case 0: return [4 /*yield*/, this.connect()];
                     case 1:
-                        user = _a.sent();
-                        res.status(201).json(user);
-                        return [3 /*break*/, 3];
+                        _a.sent();
+                        if (!expiry) return [3 /*break*/, 3];
+                        return [4 /*yield*/, this.client.set(key, value, {
+                                EX: expiry //belirtilen süre sonunda anahtar silinir
+                            })];
                     case 2:
-                        error_2 = _a.sent();
-                        next(error_2); // Hata middleware'ini çağır
-                        return [3 /*break*/, 3];
-                    case 3: return [2 /*return*/];
+                        _a.sent();
+                        return [3 /*break*/, 5];
+                    case 3: return [4 /*yield*/, this.client.set(key, value)];
+                    case 4:
+                        _a.sent();
+                        _a.label = 5;
+                    case 5: return [2 /*return*/];
                 }
             });
         });
     };
-    UserController.prototype.getUserAll = function (req, res, next) {
+    RedisService.prototype.get = function (key) {
         return __awaiter(this, void 0, void 0, function () {
-            var users, error_3;
+            var value;
             return __generator(this, function (_a) {
                 switch (_a.label) {
-                    case 0:
-                        _a.trys.push([0, 2, , 3]);
-                        return [4 /*yield*/, this.userService.getAllUsers()];
+                    case 0: return [4 /*yield*/, this.connect()];
                     case 1:
-                        users = _a.sent();
-                        if (users) {
-                            this.redis.setIfNotExists(req.originalUrl, users, 3600);
+                        _a.sent();
+                        return [4 /*yield*/, this.client.get(key)];
+                    case 2:
+                        value = _a.sent();
+                        try {
+                            return [2 /*return*/, value ? JSON.parse(value) : null];
                         }
-                        res.json(users);
-                        return [3 /*break*/, 3];
-                    case 2:
-                        error_3 = _a.sent();
-                        next(error_3); // Hata middleware'ini çağır
-                        return [3 /*break*/, 3];
-                    case 3: return [2 /*return*/];
+                        catch (e) {
+                            // JSON parse edilemiyorsa, bu bir string'dir, direkt return et
+                            return [2 /*return*/, value];
+                        }
+                        return [2 /*return*/];
                 }
             });
         });
     };
-    UserController.prototype.getUserByEmail = function (req, res, next) {
+    RedisService.prototype.setIfNotExists = function (key, value, expiry) {
         return __awaiter(this, void 0, void 0, function () {
-            var user, error_4;
+            var stringValue, result;
+            return __generator(this, function (_a) {
+                switch (_a.label) {
+                    case 0: return [4 /*yield*/, this.connect()];
+                    case 1:
+                        _a.sent();
+                        console.log(value);
+                        stringValue = typeof value === "object" ? JSON.stringify(value) : value;
+                        console.log(stringValue);
+                        return [4 /*yield*/, this.client.setNX(key, stringValue)];
+                    case 2:
+                        result = _a.sent();
+                        if (!(result && expiry)) return [3 /*break*/, 4];
+                        return [4 /*yield*/, this.client.expire(key, expiry)];
+                    case 3:
+                        _a.sent();
+                        _a.label = 4;
+                    case 4: return [2 /*return*/, result];
+                }
+            });
+        });
+    };
+    RedisService.prototype.disconnect = function () {
+        return __awaiter(this, void 0, void 0, function () {
             return __generator(this, function (_a) {
                 switch (_a.label) {
                     case 0:
-                        _a.trys.push([0, 2, , 3]);
-                        return [4 /*yield*/, this.userService.getUserByEmail(req.query.email)];
+                        if (!this.client.isOpen) return [3 /*break*/, 2];
+                        return [4 /*yield*/, this.client.quit()];
                     case 1:
-                        user = _a.sent();
-                        res.json(user);
-                        return [3 /*break*/, 3];
-                    case 2:
-                        error_4 = _a.sent();
-                        next(error_4); // Hata middleware'ini çağır
-                        return [3 /*break*/, 3];
-                    case 3: return [2 /*return*/];
+                        _a.sent(); // Bağlantıyı düzgün kapatma
+                        _a.label = 2;
+                    case 2: return [2 /*return*/];
                 }
             });
         });
     };
-    UserController = __decorate([
+    RedisService = __decorate([
         (0, inversify_1.injectable)(),
-        __param(0, (0, inversify_1.inject)(utils_1.INTERFACE_TYPE.UserService)),
-        __param(1, (0, inversify_1.inject)(utils_1.INTERFACE_TYPE.Redis)),
-        __metadata("design:paramtypes", [Object, Object])
-    ], UserController);
-    return UserController;
+        __metadata("design:paramtypes", [])
+    ], RedisService);
+    return RedisService;
 }());
-exports.UserController = UserController;
+exports.RedisService = RedisService;
 //# sourceMappingURL=index.js.map

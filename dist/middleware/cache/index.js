@@ -48,108 +48,83 @@ var __generator = (this && this.__generator) || function (thisArg, body) {
     }
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.UserController = void 0;
+exports.CacheMiddleware = void 0;
 var inversify_1 = require("inversify");
 var utils_1 = require("../../utils");
-var UserController = /** @class */ (function () {
-    function UserController(userService, redis) {
-        this.userService = userService;
+// @injectable()
+// export class CacheMiddleware {
+//     private redis: IRedisService
+//     constructor(@inject(INTERFACE_TYPE.Redis) redis: IRedisService) {
+//         this.redis = redis
+//     }
+//     async handle(req: Request, res: Response, next: NextFunction) {
+//         const key = req.originalUrl
+//         const cachedData = await this.redis.get(key);
+//         if (cachedData) {
+//             return res.json(JSON.parse(cachedData)) //json data
+//         }
+//         const sendResponse = res.json;
+//         res.json = (body) => {
+//             this.redis.set(key, JSON.stringify(body), 3600); // Cache'leme süresi: 1 saat
+//             return sendResponse.call(res, body);
+//         }
+//         next();
+//     }
+// }
+var CacheMiddleware = /** @class */ (function () {
+    function CacheMiddleware(redis) {
         this.redis = redis;
     }
-    UserController.prototype.getUserById = function (req, res, next) {
+    CacheMiddleware.prototype.handle = function (req, res, next) {
         return __awaiter(this, void 0, void 0, function () {
-            var user, error_1;
+            var key, cachedData, parsedData, err_1, sendResponse;
+            var _this = this;
             return __generator(this, function (_a) {
                 switch (_a.label) {
                     case 0:
-                        _a.trys.push([0, 2, , 3]);
-                        return [4 /*yield*/, this.userService.getUserById(req.params.id)];
+                        key = req.originalUrl;
+                        _a.label = 1;
                     case 1:
-                        user = _a.sent();
-                        res.json(user);
-                        return [3 /*break*/, 3];
+                        _a.trys.push([1, 3, , 4]);
+                        return [4 /*yield*/, this.redis.get(key)];
                     case 2:
-                        error_1 = _a.sent();
-                        next(error_1); // Hata middleware'ini çağır
-                        return [3 /*break*/, 3];
-                    case 3: return [2 /*return*/];
-                }
-            });
-        });
-    };
-    UserController.prototype.createUser = function (req, res, next) {
-        return __awaiter(this, void 0, void 0, function () {
-            var user, error_2;
-            return __generator(this, function (_a) {
-                switch (_a.label) {
-                    case 0:
-                        _a.trys.push([0, 2, , 3]);
-                        return [4 /*yield*/, this.userService.createUser(req.body)];
-                    case 1:
-                        user = _a.sent();
-                        res.status(201).json(user);
-                        return [3 /*break*/, 3];
-                    case 2:
-                        error_2 = _a.sent();
-                        next(error_2); // Hata middleware'ini çağır
-                        return [3 /*break*/, 3];
-                    case 3: return [2 /*return*/];
-                }
-            });
-        });
-    };
-    UserController.prototype.getUserAll = function (req, res, next) {
-        return __awaiter(this, void 0, void 0, function () {
-            var users, error_3;
-            return __generator(this, function (_a) {
-                switch (_a.label) {
-                    case 0:
-                        _a.trys.push([0, 2, , 3]);
-                        return [4 /*yield*/, this.userService.getAllUsers()];
-                    case 1:
-                        users = _a.sent();
-                        if (users) {
-                            this.redis.setIfNotExists(req.originalUrl, users, 3600);
+                        cachedData = _a.sent();
+                        if (cachedData) {
+                            try {
+                                parsedData = JSON.parse(cachedData);
+                                // console.log(parsedData)
+                                return [2 /*return*/, res.json(parsedData)]; // JSON verisini döndür
+                            }
+                            catch (e) {
+                                // Eğer parse edilemiyorsa string formatında return et
+                                // console.log(cachedData)
+                                return [2 /*return*/, res.json(cachedData)];
+                            }
                         }
-                        res.json(users);
-                        return [3 /*break*/, 3];
-                    case 2:
-                        error_3 = _a.sent();
-                        next(error_3); // Hata middleware'ini çağır
-                        return [3 /*break*/, 3];
-                    case 3: return [2 /*return*/];
+                        return [3 /*break*/, 4];
+                    case 3:
+                        err_1 = _a.sent();
+                        console.error("Redis'ten veri alınırken hata oluştu:", err_1);
+                        return [3 /*break*/, 4];
+                    case 4:
+                        sendResponse = res.json.bind(res);
+                        res.json = function (body) {
+                            var cacheValue = typeof body === "object" ? JSON.stringify(body) : body;
+                            _this.redis.set(key, cacheValue, 3600); // 1 saat boyunca cache'le
+                            return sendResponse(body); // Orijinal cevabı döndür
+                        };
+                        next();
+                        return [2 /*return*/];
                 }
             });
         });
     };
-    UserController.prototype.getUserByEmail = function (req, res, next) {
-        return __awaiter(this, void 0, void 0, function () {
-            var user, error_4;
-            return __generator(this, function (_a) {
-                switch (_a.label) {
-                    case 0:
-                        _a.trys.push([0, 2, , 3]);
-                        return [4 /*yield*/, this.userService.getUserByEmail(req.query.email)];
-                    case 1:
-                        user = _a.sent();
-                        res.json(user);
-                        return [3 /*break*/, 3];
-                    case 2:
-                        error_4 = _a.sent();
-                        next(error_4); // Hata middleware'ini çağır
-                        return [3 /*break*/, 3];
-                    case 3: return [2 /*return*/];
-                }
-            });
-        });
-    };
-    UserController = __decorate([
+    CacheMiddleware = __decorate([
         (0, inversify_1.injectable)(),
-        __param(0, (0, inversify_1.inject)(utils_1.INTERFACE_TYPE.UserService)),
-        __param(1, (0, inversify_1.inject)(utils_1.INTERFACE_TYPE.Redis)),
-        __metadata("design:paramtypes", [Object, Object])
-    ], UserController);
-    return UserController;
+        __param(0, (0, inversify_1.inject)(utils_1.INTERFACE_TYPE.Redis)),
+        __metadata("design:paramtypes", [Object])
+    ], CacheMiddleware);
+    return CacheMiddleware;
 }());
-exports.UserController = UserController;
+exports.CacheMiddleware = CacheMiddleware;
 //# sourceMappingURL=index.js.map

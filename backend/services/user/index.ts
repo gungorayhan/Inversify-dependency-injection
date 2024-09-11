@@ -4,6 +4,7 @@ import { IUserService, IUserRepository, IPasswordService, ITokenService, IEventE
 import { INTERFACE_TYPE } from "../../utils";
 import { AppError } from "../../utils/Error";
 import { ErrorMessages } from "../../utils/Enum/httpCodes";
+import { IRedisService } from "../../interfaces/redis";
 
 
 @injectable()
@@ -12,17 +13,19 @@ export class UserService implements IUserService {
     private tokenService: ITokenService;
     private passwordService: IPasswordService;
     private emitter : IEventEmitter
-    
+    // private redis:IRedisService
     constructor(
         @inject(INTERFACE_TYPE.UserRepository) userRepository: IUserRepository,
         @inject(INTERFACE_TYPE.TokenService) tokenService: ITokenService,
         @inject(INTERFACE_TYPE.PasswordService) passwordService: IPasswordService,
-        @inject(INTERFACE_TYPE.EventEmitter) emitter : IEventEmitter
+        @inject(INTERFACE_TYPE.EventEmitter) emitter : IEventEmitter,
+        // @inject(INTERFACE_TYPE.Redis) redis:IRedisService
     ) {
         this.userRepository = userRepository;
         this.tokenService = tokenService;
         this.passwordService = passwordService;
         this.emitter=emitter
+        // this.redis=redis
         
     }
    
@@ -60,6 +63,7 @@ export class UserService implements IUserService {
             if (users.length === 0) {
                 throw new AppError(404, 'No users found'); // İş mantığı hatası
             }
+
             return users;
         } catch (error) {
             throw new AppError(500, 'Error retrieving users');

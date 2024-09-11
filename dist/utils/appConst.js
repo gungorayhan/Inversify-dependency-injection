@@ -14,6 +14,8 @@ exports.INTERFACE_TYPE = {
     ErrorMiddleware: Symbol.for("ErrorMiddleware"),
     DtoMiddleware: Symbol.for("DtoMiddleware"),
     EventEmitter: Symbol.for("EventEmitter"),
-    Notification: Symbol.for("Notification")
+    Notification: Symbol.for("Notification"),
+    Redis: Symbol.for("Redis"),
+    CachedMiddleware: Symbol.for("CachedMiddleware")
 };
 //# sourceMappingURL=appConst.js.map

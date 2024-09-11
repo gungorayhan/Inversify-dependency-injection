@@ -53,11 +53,13 @@ var inversify_1 = require("inversify");
 var utils_1 = require("../../utils");
 var Error_1 = require("../../utils/Error");
 var UserService = /** @class */ (function () {
+    // private redis:IRedisService
     function UserService(userRepository, tokenService, passwordService, emitter) {
         this.userRepository = userRepository;
         this.tokenService = tokenService;
         this.passwordService = passwordService;
         this.emitter = emitter;
+        // this.redis=redis
     }
     UserService.prototype.createUser = function (user) {
         return __awaiter(this, void 0, void 0, function () {
