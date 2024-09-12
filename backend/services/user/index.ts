@@ -32,7 +32,7 @@ export class UserService implements IUserService {
 
     async createUser(user: UserEntity): Promise<UserEntity> {
         try {
-            const result = await this.userRepository.createUser(user);
+            const result = await this.userRepository.create(user);
 
             this.emitter.publish('userCreated',result)
             
@@ -59,7 +59,7 @@ export class UserService implements IUserService {
 
     async getAllUsers():Promise<UserEntity[]>{
         try {
-            const users = await this.userRepository.getAllUser();
+            const users = await this.userRepository.findAll();
             if (users.length === 0) {
                 throw new AppError(404, 'No users found'); // İş mantığı hatası
             }

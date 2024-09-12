@@ -1,10 +1,7 @@
 import { UserEntity } from "../../entities";
+import { IBaseRepository } from "../base";
 
-export interface IUserRepository{
-    findById(id:string):Promise<UserEntity | null>
+export interface IUserRepository extends IBaseRepository<UserEntity>{
     findByEmail(email:string): Promise<UserEntity | null>
-    createUser(user:UserEntity):Promise<UserEntity>
-    updateUser(id:string, user:Partial<UserEntity>):Promise<UserEntity>
-    removeUser(id:string):Promise<void>
-    getAllUser():Promise<UserEntity[]>
+    
 }

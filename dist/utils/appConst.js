@@ -16,6 +16,7 @@ exports.INTERFACE_TYPE = {
     EventEmitter: Symbol.for("EventEmitter"),
     Notification: Symbol.for("Notification"),
     Redis: Symbol.for("Redis"),
-    CachedMiddleware: Symbol.for("CachedMiddleware")
+    CachedMiddleware: Symbol.for("CachedMiddleware"),
+    SocketChat: Symbol.for("SocketChat")
 };
 //# sourceMappingURL=appConst.js.map

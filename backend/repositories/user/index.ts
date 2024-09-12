@@ -16,7 +16,7 @@ export class UserRepository implements IUserRepository{
         throw new AppError(500, 'Database error');
      }
     }
-    async getAllUser(): Promise<UserEntity[]> {
+    async findAll(): Promise<UserEntity[]> {
         try {
             return await UserModel.find().exec();
         } catch (error) {
@@ -32,7 +32,7 @@ export class UserRepository implements IUserRepository{
             throw new AppError(500, 'Database error');
         }
     }
-    async createUser(user: UserEntity): Promise<UserEntity> {
+    async create(user: UserEntity): Promise<UserEntity> {
         try {
             return await UserModel.create(user); // Veritabanına ekleme
         } catch (error) {
@@ -40,10 +40,10 @@ export class UserRepository implements IUserRepository{
             throw new AppError(500, 'Database error');
         }
     }
-    async updateUser(id: string, user: Partial<UserEntity>): Promise<UserEntity> {
+    async update(id: string, user: Partial<UserEntity>): Promise<UserEntity> {
         throw new Error("Method not implemented.");
     }
-    async removeUser(id: string): Promise<void> {
+    async remove(id: string): Promise<void> {
         throw new Error("Method not implemented.");
     }
     

@@ -51,26 +51,6 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.CacheMiddleware = void 0;
 var inversify_1 = require("inversify");
 var utils_1 = require("../../utils");
-// @injectable()
-// export class CacheMiddleware {
-//     private redis: IRedisService
-//     constructor(@inject(INTERFACE_TYPE.Redis) redis: IRedisService) {
-//         this.redis = redis
-//     }
-//     async handle(req: Request, res: Response, next: NextFunction) {
-//         const key = req.originalUrl
-//         const cachedData = await this.redis.get(key);
-//         if (cachedData) {
-//             return res.json(JSON.parse(cachedData)) //json data
-//         }
-//         const sendResponse = res.json;
-//         res.json = (body) => {
-//             this.redis.set(key, JSON.stringify(body), 3600); // Cache'leme süresi: 1 saat
-//             return sendResponse.call(res, body);
-//         }
-//         next();
-//     }
-// }
 var CacheMiddleware = /** @class */ (function () {
     function CacheMiddleware(redis) {
         this.redis = redis;

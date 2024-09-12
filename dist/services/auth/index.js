@@ -100,7 +100,7 @@ var AuthService = /** @class */ (function () {
                         return [4 /*yield*/, this.passwordService.hashPassword(user.password)];
                     case 2:
                         hashedPassword = _a.sent();
-                        return [4 /*yield*/, this.userRepository.createUser({
+                        return [4 /*yield*/, this.userRepository.create({
                                 username: user.username,
                                 email: user.email,
                                 password: hashedPassword,

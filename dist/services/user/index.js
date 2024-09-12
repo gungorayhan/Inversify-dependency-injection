@@ -68,7 +68,7 @@ var UserService = /** @class */ (function () {
                 switch (_a.label) {
                     case 0:
                         _a.trys.push([0, 2, , 3]);
-                        return [4 /*yield*/, this.userRepository.createUser(user)];
+                        return [4 /*yield*/, this.userRepository.create(user)];
                     case 1:
                         result = _a.sent();
                         this.emitter.publish('userCreated', result);
@@ -112,7 +112,7 @@ var UserService = /** @class */ (function () {
                 switch (_a.label) {
                     case 0:
                         _a.trys.push([0, 2, , 3]);
-                        return [4 /*yield*/, this.userRepository.getAllUser()];
+                        return [4 /*yield*/, this.userRepository.findAll()];
                     case 1:
                         users = _a.sent();
                         if (users.length === 0) {

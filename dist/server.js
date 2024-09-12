@@ -39,23 +39,29 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-var express_1 = __importDefault(require("express"));
 require("reflect-metadata");
+var http_1 = __importDefault(require("http"));
+var express_1 = __importDefault(require("express"));
 var api_1 = __importDefault(require("./api"));
 var config_1 = __importDefault(require("./config"));
 var db_1 = require("./db");
+var socketChat_1 = require("./container/socketChat");
+var utils_1 = require("./utils");
 function ServerStart() {
     return __awaiter(this, void 0, void 0, function () {
-        var app, error_1;
+        var socketChat, app, server, error_1;
         return __generator(this, function (_a) {
             switch (_a.label) {
                 case 0:
                     _a.trys.push([0, 2, , 4]);
+                    socketChat = socketChat_1.socketContainer.get(utils_1.INTERFACE_TYPE.SocketChat);
                     app = (0, express_1.default)();
                     return [4 /*yield*/, (0, api_1.default)(app)];
                 case 1:
                     _a.sent();
-                    app.listen(config_1.default.PORT, function () {
+                    server = http_1.default.createServer(app);
+                    socketChat.initialize(server);
+                    server.listen(config_1.default.PORT, function () {
                         console.log("Server is running on port ".concat(config_1.default.PORT));
                     });
                     return [3 /*break*/, 4];

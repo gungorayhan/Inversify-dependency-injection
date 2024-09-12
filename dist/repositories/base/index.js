@@ -1,10 +1,4 @@
 "use strict";
-var __decorate = (this && this.__decorate) || function (decorators, target, key, desc) {
-    var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
-    if (typeof Reflect === "object" && typeof Reflect.decorate === "function") r = Reflect.decorate(decorators, target, key, desc);
-    else for (var i = decorators.length - 1; i >= 0; i--) if (d = decorators[i]) r = (c < 3 ? d(r) : c > 3 ? d(target, key, r) : d(target, key)) || r;
-    return c > 3 && r && Object.defineProperty(target, key, r), r;
-};
 var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, generator) {
     function adopt(value) { return value instanceof P ? value : new P(function (resolve) { resolve(value); }); }
     return new (P || (P = Promise))(function (resolve, reject) {
@@ -42,103 +36,104 @@ var __generator = (this && this.__generator) || function (thisArg, body) {
     }
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.UserRepository = void 0;
-var inversify_1 = require("inversify");
-var models_1 = require("../../models");
+exports.BaseRepository = void 0;
 var Error_1 = require("../../utils/Error");
-var UserRepository = /** @class */ (function () {
-    function UserRepository() {
+var BaseRepository = /** @class */ (function () {
+    function BaseRepository(model) {
+        this.model = model;
     }
-    UserRepository.prototype.findById = function (id) {
+    BaseRepository.prototype.findById = function (id) {
         return __awaiter(this, void 0, void 0, function () {
             var error_1;
             return __generator(this, function (_a) {
                 switch (_a.label) {
                     case 0:
                         _a.trys.push([0, 2, , 3]);
-                        return [4 /*yield*/, models_1.UserModel.findById(id).exec()];
+                        return [4 /*yield*/, this.model.findById(id).exec()];
                     case 1: return [2 /*return*/, _a.sent()];
                     case 2:
                         error_1 = _a.sent();
-                        console.error("Database error finding user by ID:", error_1);
-                        throw new Error_1.AppError(500, 'Database error');
+                        throw new Error_1.AppError(500, "Database error");
                     case 3: return [2 /*return*/];
                 }
             });
         });
     };
-    UserRepository.prototype.findAll = function () {
+    BaseRepository.prototype.findAll = function () {
         return __awaiter(this, void 0, void 0, function () {
             var error_2;
             return __generator(this, function (_a) {
                 switch (_a.label) {
                     case 0:
                         _a.trys.push([0, 2, , 3]);
-                        return [4 /*yield*/, models_1.UserModel.find().exec()];
+                        return [4 /*yield*/, this.model.find().exec()];
                     case 1: return [2 /*return*/, _a.sent()];
                     case 2:
                         error_2 = _a.sent();
-                        console.error("UserRepository Error:", error_2);
+                        console.error("Database error finding all records:", error_2);
                         throw new Error_1.AppError(500, 'Database error');
                     case 3: return [2 /*return*/];
                 }
             });
         });
     };
-    UserRepository.prototype.findByEmail = function (email) {
+    BaseRepository.prototype.create = function (item) {
         return __awaiter(this, void 0, void 0, function () {
             var error_3;
             return __generator(this, function (_a) {
                 switch (_a.label) {
                     case 0:
                         _a.trys.push([0, 2, , 3]);
-                        return [4 /*yield*/, models_1.UserModel.findOne({ email: email }).exec()];
-                    case 1: return [2 /*return*/, _a.sent()]; // Veritabanı sorgusu
+                        return [4 /*yield*/, this.model.create(item)];
+                    case 1: return [2 /*return*/, _a.sent()];
                     case 2:
                         error_3 = _a.sent();
-                        console.error("Database error finding user by email:", error_3);
+                        console.error("Database error creating record:", error_3);
                         throw new Error_1.AppError(500, 'Database error');
                     case 3: return [2 /*return*/];
                 }
             });
         });
     };
-    UserRepository.prototype.create = function (user) {
+    BaseRepository.prototype.update = function (id, item) {
         return __awaiter(this, void 0, void 0, function () {
             var error_4;
             return __generator(this, function (_a) {
                 switch (_a.label) {
                     case 0:
                         _a.trys.push([0, 2, , 3]);
-                        return [4 /*yield*/, models_1.UserModel.create(user)];
-                    case 1: return [2 /*return*/, _a.sent()]; // Veritabanına ekleme
+                        return [4 /*yield*/, this.model.findByIdAndUpdate(id, item, { new: true }).exec()];
+                    case 1: return [2 /*return*/, _a.sent()];
                     case 2:
                         error_4 = _a.sent();
-                        console.error("Database error creating user:", error_4);
+                        console.error("Database error updating record:", error_4);
                         throw new Error_1.AppError(500, 'Database error');
                     case 3: return [2 /*return*/];
                 }
             });
         });
     };
-    UserRepository.prototype.update = function (id, user) {
+    BaseRepository.prototype.remove = function (id) {
         return __awaiter(this, void 0, void 0, function () {
+            var error_5;
             return __generator(this, function (_a) {
-                throw new Error("Method not implemented.");
+                switch (_a.label) {
+                    case 0:
+                        _a.trys.push([0, 2, , 3]);
+                        return [4 /*yield*/, this.model.findByIdAndDelete(id).exec()];
+                    case 1:
+                        _a.sent();
+                        return [3 /*break*/, 3];
+                    case 2:
+                        error_5 = _a.sent();
+                        console.error("Database error removing record:", error_5);
+                        throw new Error_1.AppError(500, 'Database error');
+                    case 3: return [2 /*return*/];
+                }
             });
         });
     };
-    UserRepository.prototype.remove = function (id) {
-        return __awaiter(this, void 0, void 0, function () {
-            return __generator(this, function (_a) {
-                throw new Error("Method not implemented.");
-            });
-        });
-    };
-    UserRepository = __decorate([
-        (0, inversify_1.injectable)()
-    ], UserRepository);
-    return UserRepository;
+    return BaseRepository;
 }());
-exports.UserRepository = UserRepository;
+exports.BaseRepository = BaseRepository;
 //# sourceMappingURL=index.js.map
