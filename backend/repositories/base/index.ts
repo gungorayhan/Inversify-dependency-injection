@@ -1,13 +1,14 @@
 import { Model } from "mongoose";
 import { AppError } from "../../utils/Error";
 import { IBaseRepository } from "../../interfaces/base";
+import { injectable, unmanaged } from "inversify";
 
 
-
+@injectable()
 export class BaseRepository<T> implements IBaseRepository<T>{
-    private model:Model<T>
+    private model:any
 
-    constructor(model:Model<T>){
+    constructor(@unmanaged() model:any){
         this.model=model
     }
 

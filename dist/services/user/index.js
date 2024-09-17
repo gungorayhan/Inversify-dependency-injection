@@ -75,8 +75,14 @@ var UserService = /** @class */ (function () {
                         return [2 /*return*/, result];
                     case 2:
                         error_1 = _a.sent();
-                        // Hata mesajını değiştirerek fırlatabilirsiniz
-                        throw new Error_1.AppError(400, 'User creation failed');
+                        if (error_1 instanceof Error_1.AppError) {
+                            throw error_1;
+                        }
+                        else {
+                            console.error("User not found by email:", error_1);
+                            throw new Error_1.AppError(400, 'User creation failed');
+                        }
+                        return [3 /*break*/, 3];
                     case 3: return [2 /*return*/];
                 }
             });
@@ -98,8 +104,14 @@ var UserService = /** @class */ (function () {
                         return [2 /*return*/, user];
                     case 2:
                         error_2 = _a.sent();
-                        // Repository hata mesajlarını değiştirmeyin
-                        throw new Error_1.AppError(500, 'Error retrieving user by ID');
+                        if (error_2 instanceof Error_1.AppError) {
+                            throw error_2;
+                        }
+                        else {
+                            console.error("User not found by email:", error_2);
+                            throw new Error_1.AppError(500, 'Error retrieving user by ID');
+                        }
+                        return [3 /*break*/, 3];
                     case 3: return [2 /*return*/];
                 }
             });
@@ -121,7 +133,14 @@ var UserService = /** @class */ (function () {
                         return [2 /*return*/, users];
                     case 2:
                         error_3 = _a.sent();
-                        throw new Error_1.AppError(500, 'Error retrieving users');
+                        if (error_3 instanceof Error_1.AppError) {
+                            throw error_3;
+                        }
+                        else {
+                            console.error("User not found by email:", error_3);
+                            throw new Error_1.AppError(500, 'Error retrieving users');
+                        }
+                        return [3 /*break*/, 3];
                     case 3: return [2 /*return*/];
                 }
             });
@@ -143,7 +162,14 @@ var UserService = /** @class */ (function () {
                         return [2 /*return*/, user];
                     case 2:
                         error_4 = _a.sent();
-                        throw new Error_1.AppError(500, 'Error retrieving user by email');
+                        if (error_4 instanceof Error_1.AppError) {
+                            throw error_4;
+                        }
+                        else {
+                            console.error("User not found by email:", error_4);
+                            throw new Error_1.AppError(500, 'Internal server error.');
+                        }
+                        return [3 /*break*/, 3];
                     case 3: return [2 /*return*/];
                 }
             });
@@ -151,13 +177,67 @@ var UserService = /** @class */ (function () {
     };
     UserService.prototype.updateUser = function (id, user) {
         return __awaiter(this, void 0, void 0, function () {
+            var existingUser, result, error_5;
             return __generator(this, function (_a) {
-                throw new Error("Method not implemented.");
+                switch (_a.label) {
+                    case 0:
+                        _a.trys.push([0, 3, , 4]);
+                        return [4 /*yield*/, this.userRepository.findById(id)];
+                    case 1:
+                        existingUser = _a.sent();
+                        if (!existingUser) {
+                            throw new Error_1.AppError(404, 'User not found');
+                        }
+                        return [4 /*yield*/, this.userRepository.update(id, user)];
+                    case 2:
+                        result = _a.sent();
+                        return [2 /*return*/, result];
+                    case 3:
+                        error_5 = _a.sent();
+                        if (error_5 instanceof Error_1.AppError) {
+                            throw error_5;
+                        }
+                        else {
+                            console.error("Error updating user:", error_5);
+                            throw new Error_1.AppError(500, 'Internal server error.');
+                        }
+                        return [3 /*break*/, 4];
+                    case 4: return [2 /*return*/];
+                }
             });
         });
     };
     UserService.prototype.deleteUser = function (id) {
-        throw new Error("Method not implemented.");
+        return __awaiter(this, void 0, void 0, function () {
+            var existingUser, error_6;
+            return __generator(this, function (_a) {
+                switch (_a.label) {
+                    case 0:
+                        _a.trys.push([0, 3, , 4]);
+                        return [4 /*yield*/, this.userRepository.findById(id)];
+                    case 1:
+                        existingUser = _a.sent();
+                        if (!existingUser) {
+                            throw new Error_1.AppError(404, 'User not found.');
+                        }
+                        return [4 /*yield*/, this.userRepository.remove(id)];
+                    case 2:
+                        _a.sent();
+                        return [3 /*break*/, 4];
+                    case 3:
+                        error_6 = _a.sent();
+                        if (error_6 instanceof Error_1.AppError) {
+                            throw error_6;
+                        }
+                        else {
+                            console.error("Error deleting user:", error_6);
+                            throw new Error_1.AppError(500, 'Internal server error.');
+                        }
+                        return [3 /*break*/, 4];
+                    case 4: return [2 /*return*/];
+                }
+            });
+        });
     };
     UserService.prototype.subscribeToUserCreated = function (callback) {
         this.emitter.subscribe('userCreated', callback);

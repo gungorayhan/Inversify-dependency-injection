@@ -58,15 +58,16 @@ var UserController = /** @class */ (function () {
     }
     UserController.prototype.getUserById = function (req, res, next) {
         return __awaiter(this, void 0, void 0, function () {
-            var user, error_1;
+            var id, user, error_1;
             return __generator(this, function (_a) {
                 switch (_a.label) {
                     case 0:
                         _a.trys.push([0, 2, , 3]);
-                        return [4 /*yield*/, this.userService.getUserById(req.params.id)];
+                        id = req.params.id;
+                        return [4 /*yield*/, this.userService.getUserById(id)];
                     case 1:
                         user = _a.sent();
-                        res.json(user);
+                        res.status(200).json(user);
                         return [3 /*break*/, 3];
                     case 2:
                         error_1 = _a.sent();
@@ -79,15 +80,16 @@ var UserController = /** @class */ (function () {
     };
     UserController.prototype.createUser = function (req, res, next) {
         return __awaiter(this, void 0, void 0, function () {
-            var user, error_2;
+            var user, result, error_2;
             return __generator(this, function (_a) {
                 switch (_a.label) {
                     case 0:
                         _a.trys.push([0, 2, , 3]);
-                        return [4 /*yield*/, this.userService.createUser(req.body)];
+                        user = req.body;
+                        return [4 /*yield*/, this.userService.createUser(user)];
                     case 1:
-                        user = _a.sent();
-                        res.status(201).json(user);
+                        result = _a.sent();
+                        res.status(201).json(result);
                         return [3 /*break*/, 3];
                     case 2:
                         error_2 = _a.sent();
@@ -111,11 +113,11 @@ var UserController = /** @class */ (function () {
                         if (users) {
                             this.redis.setIfNotExists(req.originalUrl, users, 3600);
                         }
-                        res.json(users);
+                        res.status(200).json(users);
                         return [3 /*break*/, 3];
                     case 2:
                         error_3 = _a.sent();
-                        next(error_3); // Hata middleware'ini çağır
+                        next(error_3);
                         return [3 /*break*/, 3];
                     case 3: return [2 /*return*/];
                 }
@@ -136,7 +138,51 @@ var UserController = /** @class */ (function () {
                         return [3 /*break*/, 3];
                     case 2:
                         error_4 = _a.sent();
-                        next(error_4); // Hata middleware'ini çağır
+                        next(error_4);
+                        return [3 /*break*/, 3];
+                    case 3: return [2 /*return*/];
+                }
+            });
+        });
+    };
+    UserController.prototype.updateUser = function (req, res, next) {
+        return __awaiter(this, void 0, void 0, function () {
+            var id, userUpdates, result, error_5;
+            return __generator(this, function (_a) {
+                switch (_a.label) {
+                    case 0:
+                        _a.trys.push([0, 2, , 3]);
+                        id = req.params.id;
+                        userUpdates = req.body;
+                        return [4 /*yield*/, this.userService.updateUser(id, userUpdates)];
+                    case 1:
+                        result = _a.sent();
+                        return [2 /*return*/, result];
+                    case 2:
+                        error_5 = _a.sent();
+                        next(error_5);
+                        return [3 /*break*/, 3];
+                    case 3: return [2 /*return*/];
+                }
+            });
+        });
+    };
+    UserController.prototype.deleteUser = function (req, res, next) {
+        return __awaiter(this, void 0, void 0, function () {
+            var id, error_6;
+            return __generator(this, function (_a) {
+                switch (_a.label) {
+                    case 0:
+                        _a.trys.push([0, 2, , 3]);
+                        id = req.params.id;
+                        return [4 /*yield*/, this.userService.deleteUser(id)];
+                    case 1:
+                        _a.sent();
+                        res.status(204).send(); // No content
+                        return [3 /*break*/, 3];
+                    case 2:
+                        error_6 = _a.sent();
+                        next(error_6);
                         return [3 /*break*/, 3];
                     case 3: return [2 /*return*/];
                 }

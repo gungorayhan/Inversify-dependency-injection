@@ -25,8 +25,8 @@ export default async (app: Application): Promise<Application> => {
 
     const ErrorMiddleware = errorContainer.get<ErrorMiddleware>(INTERFACE_TYPE.ErrorMiddleware)
 
-    // await connectToUserDatabase();
-   await initializeModels()
+    await connectToUserDatabase();
+//    await initializeModels()
     
 
     app.use("/api", Router)
