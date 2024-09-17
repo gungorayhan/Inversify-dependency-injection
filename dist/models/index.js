@@ -40,13 +40,10 @@ exports.UserModel = void 0;
 exports.createModel = createModel;
 exports.initializeModels = initializeModels;
 var db_1 = require("../db");
+// import { createModel } from "../db/connection/createModel";
 var user_1 = require("./user");
-// let userDB: Connection
-// export async function connectionDBToCreatModel(){
-//     await connectToDatabases()
-//     userDB = getDatabaseConnection('userDB')
-//     UserModel = userDB.model<UserEntity>("User",userSchema)
-// }
+Object.defineProperty(exports, "UserModel", { enumerable: true, get: function () { return user_1.UserModel; } });
+// export let UserModel: Model<UserEntity>
 function createModel(dbName, modelName, schema) {
     var db = (0, db_1.getDatabaseConnection)(dbName);
     return db.model(modelName, schema);
@@ -54,14 +51,19 @@ function createModel(dbName, modelName, schema) {
 function initializeModels() {
     return __awaiter(this, void 0, void 0, function () {
         return __generator(this, function (_a) {
-            switch (_a.label) {
-                case 0: return [4 /*yield*/, (0, db_1.connectToDatabases)()];
-                case 1:
-                    _a.sent();
-                    exports.UserModel = createModel('userDB', "User", user_1.userSchema);
-                    return [2 /*return*/];
-            }
+            return [2 /*return*/];
         });
     });
 }
+// // let userDB: Connection
+// // export async function connectionDBToCreatModel(){
+// //     await connectToDatabases()
+// //     userDB = getDatabaseConnection('userDB')
+// //     UserModel = userDB.model<UserEntity>("User",userSchema)
+// // }
+// export async function initializeModels() {
+//     await databaseManager.connectToDatabases();
+//      UserModel = createModel('userDB', 'User', userSchema);
+//     // Diğer modelleri de aynı şekilde oluşturabilirsiniz
+// }
 //# sourceMappingURL=index.js.map

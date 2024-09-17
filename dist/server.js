@@ -56,8 +56,10 @@ function ServerStart() {
                     _a.trys.push([0, 2, , 4]);
                     socketChat = socketChat_1.socketContainer.get(utils_1.INTERFACE_TYPE.SocketChat);
                     app = (0, express_1.default)();
+                    // await initializeModels()
                     return [4 /*yield*/, (0, api_1.default)(app)];
                 case 1:
+                    // await initializeModels()
                     _a.sent();
                     server = http_1.default.createServer(app);
                     socketChat.initialize(server);

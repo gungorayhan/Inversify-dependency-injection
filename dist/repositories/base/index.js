@@ -49,7 +49,6 @@ var __generator = (this && this.__generator) || function (thisArg, body) {
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.BaseRepository = void 0;
-var mongoose_1 = require("mongoose");
 var Error_1 = require("../../utils/Error");
 var inversify_1 = require("inversify");
 var BaseRepository = /** @class */ (function () {
@@ -150,7 +149,7 @@ var BaseRepository = /** @class */ (function () {
     BaseRepository = __decorate([
         (0, inversify_1.injectable)(),
         __param(0, (0, inversify_1.unmanaged)()),
-        __metadata("design:paramtypes", [mongoose_1.Model])
+        __metadata("design:paramtypes", [Object])
     ], BaseRepository);
     return BaseRepository;
 }());

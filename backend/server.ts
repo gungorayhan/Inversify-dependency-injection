@@ -7,15 +7,16 @@ import { closeConnections } from "./db";
 import { socketContainer } from "./container/socketChat";
 import { SocketChat } from "./libs/socketChat";
 import { INTERFACE_TYPE } from "./utils";
+import { initializeModels } from "./models";
 
 
 async function ServerStart() {
    try {
 
       const socketChat = socketContainer.get<SocketChat>(INTERFACE_TYPE.SocketChat)
-
+      
       const app: Application = express();
-
+// await initializeModels()
       await App(app)
 
       const server = http.createServer(app)

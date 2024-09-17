@@ -1,0 +1,1 @@
+{"version":3,"file":"createModel.js","sourceRoot":"","sources":["../../../backend/db/connection/createModel.ts"],"names":[],"mappings":";;AAGA,kCAGC;AALD,4CAAgD;AAEhD,SAAgB,WAAW,CAAI,MAAc,EAAE,SAAiB,EAAE,MAAc;IAC5E,IAAM,EAAE,GAAG,4BAAe,CAAC,qBAAqB,CAAC,MAAM,CAAC,CAAC;IACzD,OAAO,EAAE,CAAC,KAAK,CAAI,SAAS,EAAE,MAAM,CAAC,CAAC;AAC1C,CAAC"}

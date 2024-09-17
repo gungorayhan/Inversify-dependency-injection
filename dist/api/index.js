@@ -42,11 +42,11 @@ Object.defineProperty(exports, "__esModule", { value: true });
 var express_1 = __importDefault(require("express"));
 var routes_1 = require("../routes");
 var cookie_parser_1 = __importDefault(require("cookie-parser"));
+var db_1 = require("../db");
 var cors_1 = __importDefault(require("cors"));
 var errorMiddleware_1 = require("../container/errorMiddleware");
 var utils_1 = require("../utils");
 var userController_1 = require("../container/userController");
-var models_1 = require("../models");
 exports.default = (function (app) { return __awaiter(void 0, void 0, void 0, function () {
     var ErrorMiddleware;
     return __generator(this, function (_a) {
@@ -60,10 +60,8 @@ exports.default = (function (app) { return __awaiter(void 0, void 0, void 0, fun
                 // notificationContainer.get<NotificationServices>(INTERFACE_TYPE.Notification)
                 userController_1.userContainer.get(utils_1.INTERFACE_TYPE.Notification);
                 ErrorMiddleware = errorMiddleware_1.errorContainer.get(utils_1.INTERFACE_TYPE.ErrorMiddleware);
-                // await connectToUserDatabase();
-                return [4 /*yield*/, (0, models_1.initializeModels)()];
+                return [4 /*yield*/, (0, db_1.connectToUserDatabase)()];
             case 1:
-                // await connectToUserDatabase();
                 _a.sent();
                 app.use("/api", routes_1.Router);
                 app.use(ErrorMiddleware.handle.bind(ErrorMiddleware));
