@@ -40,7 +40,7 @@ export class AuthController {
     async register(req: Request, res: Response, next: NextFunction): Promise<void> {
         try {
             const { username, email, password, first_name, last_name } = req.body // dto will write
-            const tokens =await this.authService.register({
+            const tokens = await this.authService.register({
                 username,
                 email,
                 password,
@@ -69,9 +69,20 @@ export class AuthController {
 
     async logout(req: Request, res: Response, next: NextFunction): Promise<void> {
         try {
+            
+            res.clearCookie('refreshToken', {
+                httpOnly: true,
+                sameSite: 'strict',
+                // secure:true, // sadece https'de kullanılacaksa açılır
+            });
 
+            // Eğer sunucuda token'ları geçersiz kılmak isityorsak burada ek bir işlem yapabilriiz
+            // Örneğin, refresh token'ı veritabanında ya da bellekte kara listeye almak
+
+            res.status(200).json({ message: "Logged out successfully" });
         } catch (error) {
-console.log(error)
+            console.log("Logout Error: ", error);
+            next(error);
         }
     }
 }

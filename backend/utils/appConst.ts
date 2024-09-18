@@ -16,5 +16,6 @@ export const INTERFACE_TYPE = {
     Notification: Symbol.for("Notification"),
     Redis: Symbol.for("Redis"),
     CachedMiddleware: Symbol.for("CachedMiddleware"),
-    SocketChat: Symbol.for("SocketChat")
+    SocketChat: Symbol.for("SocketChat"),
+    BaseRepository: Symbol.for("BaseRepository")
 }

@@ -1,4 +1,4 @@
-import { Model } from "mongoose";
+import { Model, FilterQuery } from "mongoose";
 import { AppError } from "../../utils/Error";
 import { IBaseRepository } from "../../interfaces/base";
 import { injectable, unmanaged } from "inversify";
@@ -6,9 +6,9 @@ import { injectable, unmanaged } from "inversify";
 
 @injectable()
 export class BaseRepository<T> implements IBaseRepository<T>{
-    private model:any
+    private model:Model<T>
 
-    constructor(@unmanaged() model:any){
+    constructor(@unmanaged() model:Model<T>){
         this.model=model
     }
 
@@ -54,6 +54,14 @@ export class BaseRepository<T> implements IBaseRepository<T>{
         } catch (error) {
           console.error("Database error removing record:", error);
           throw new AppError(500, 'Database error');
+        }
+      }
+
+      async findByFilters(filters: FilterQuery<T>): Promise<T[]> {
+        try {
+          return await this.model.find(filters).exec();
+        } catch (error) {
+          throw new AppError(500, "Database error");
         }
       }
 }

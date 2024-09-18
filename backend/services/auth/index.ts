@@ -3,6 +3,7 @@ import { inject, injectable } from "inversify"
 import { INTERFACE_TYPE } from "../../utils";
 import { UserEntity } from "../../entities";
 import { AppError } from "../../utils/Error";
+import { Response } from "express";
 
 
 @injectable()
@@ -62,7 +63,7 @@ export class AuthService implements IAuthService {
 
         return { accessToken, refreshToken }
     }
-    async logout(): Promise<void> {
+    async logout(res:Response): Promise<void> {
         throw new Error("Method not implemented.");
     }
 

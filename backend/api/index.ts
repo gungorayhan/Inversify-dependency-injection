@@ -27,8 +27,6 @@ export default async (app: Application): Promise<Application> => {
 
     await connectToUserDatabase();
 
-    
-
     app.use("/api", Router)
     app.use(ErrorMiddleware.handle.bind(ErrorMiddleware))
 
